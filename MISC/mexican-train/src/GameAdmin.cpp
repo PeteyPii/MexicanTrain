@@ -1,6 +1,8 @@
 #include "GameAdmin.h"
 
+#include <cassert>
 #include <iostream>
+#include "Board.h"
 #include "PlayerAI.h"
 
 using namespace std;
@@ -10,37 +12,44 @@ GameAdmin::GameAdmin() {
 }
 
 void GameAdmin::runGame(
-  int32 playerCount,
-  int32 maxPip,
-  std::function<
-    std::vector<PlayerAI*>,
+  const GameSettings& gameSettings,
+  std::function<std::vector<std::unique_ptr<PlayerAI>>(
     const std::vector<Player>&,
     const std::vector<std::vector<EnemyPlayer>>&,
     const Board&
-  > aiCreator
+  )> aiCreator
 ) {
-  cout << "Number of players: " << playerCount << endl;
-  cout << "Domino pip count: " << maxPip << endl;
+  cout << "Number of players: " << gameSettings.m_numberOfPlayers << endl;
+  cout << "Max domino pip count: " << gameSettings.m_maxPips << endl;
 
-  if (playerAis.size() < 1 || playerAis.size() > 8) {
+  if (gameSettings.m_numberOfPlayers < 1 || gameSettings.m_numberOfPlayers > 8) {
     cerr << "There must be 1 - 8 players." << endl;
     return;
   }
-  if (maxPip < 0) {
+  if (gameSettings.m_maxPips < 0) {
     cerr << "Max pip must be non-negative." << endl;
     return;
   }
 
-  std::vector<Player> players(playerCount);
-  std::vector<std::vector<EnemyPlayer>> enemyPlayers(playerCount);
-  for (int32 i = 0; i < players.size(); i++) {
-    for (int32 offset = 0; offset < players.size(); offset++) {
-
+  std::vector<Player> players(gameSettings.m_numberOfPlayers);
+  std::vector<std::vector<EnemyPlayer>> enemyPlayerLists(gameSettings.m_numberOfPlayers);
+  for (int32 i = 0; i < (int32) players.size(); i++) {
+    for (int32 offset = 1; offset < (int32) players.size(); offset++) {
+      enemyPlayerLists[i].push_back(players[(i + offset) % players.size()].m_enemyView);
     }
   }
-
   Board board(players);
 
+  std::vector<std::unique_ptr<PlayerAI>> playerAis(aiCreator(players, enemyPlayerLists, board));
 
+  assert((int32) playerAis.size() == gameSettings.m_numberOfPlayers);
+
+  for (auto& ai : playerAis) {
+    ai->notifyGameStart();
+  }
+
+  for (auto& ai : playerAis) {
+    ai->notifyGameEnd();
+  }
 }
 

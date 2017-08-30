@@ -3,7 +3,6 @@
 #include "IdentityGenerator.h"
 
 
-Player::Player() {
+Player::Player() : m_enemyView(*this) {
   m_id = IdentityGenerator::get().nextId();
-  m_enemyView = EnemyPlayer(*this);
 }

@@ -1,49 +1,49 @@
-#include "LoggingAI.h"
+#include "LoggingPlayerAI.h"
 
 #include <sstream>
 #include "Board.h"
 #include "Player.h"
 
 
-LoggingAI::LoggingAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out)
-  : PlayerAI(player, enemyPlayers, board),
+LoggingPlayerAI::LoggingPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out)
+  : PlayerAI(player, enemyPlayers, board, gameSettings),
   m_out(out) {
 }
 
-LoggingAI::~LoggingAI() {
+LoggingPlayerAI::~LoggingPlayerAI() {
 }
 
-void LoggingAI::message(const std::string& msg) {
+void LoggingPlayerAI::message(const std::string& msg) {
   if (m_out) {
     *m_out << messagePrefix() << "Received message: \"" << msg << "\"\n";
   }
 }
 
-void LoggingAI::notifyGameStart() {
+void LoggingPlayerAI::notifyGameStart() {
   if (m_out) {
     *m_out << messagePrefix() << "Game started.\n";
   }
 }
 
-void LoggingAI::notifyGameEnd() {
+void LoggingPlayerAI::notifyGameEnd() {
   if (m_out) {
     *m_out << messagePrefix() << "Game ended.\n";
   }
 }
 
-void LoggingAI::notifyRoundStart() {
+void LoggingPlayerAI::notifyRoundStart() {
   if (m_out) {
     *m_out << messagePrefix() << "Round started.\n";
   }
 }
 
-void LoggingAI::notifyRoundEnd() {
+void LoggingPlayerAI::notifyRoundEnd() {
   if (m_out) {
     *m_out << messagePrefix() << "Round ended.\n";
   }
 }
 
-void LoggingAI::notifyTilePlay(id playerId, id trainId, id tileId) {
+void LoggingPlayerAI::notifyTilePlay(id playerId, id trainId, id tileId) {
   if (m_out) {
     const Tile& tilePlayed = m_board.getTrainById(trainId).m_tiles.back();
     *m_out << messagePrefix() << "{" << playerId << "} played {" <<
@@ -51,13 +51,13 @@ void LoggingAI::notifyTilePlay(id playerId, id trainId, id tileId) {
   }
 }
 
-void LoggingAI::notifyTileDraw(id playerId) {
+void LoggingPlayerAI::notifyTileDraw(id playerId) {
   if (m_out) {
     *m_out << messagePrefix() << "{" << playerId << "} drew a tile.\n";
   }
 }
 
-std::string LoggingAI::messagePrefix() {
+std::string LoggingPlayerAI::messagePrefix() {
   std::stringstream ss;
   ss << "<" << m_player.m_id << "> ";
   return ss.str();
