@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include "IdentityGenerator.h"
 #include "RNG.h"
 
 
@@ -14,10 +15,11 @@ Board::Board(const std::vector<Player>& players) {
   for (auto& kv : m_playerTrains) {
     m_idToTrain.insert(std::make_pair(kv.second.m_id, &kv.second));
   }
+  m_centerPlaceId = IdentityGenerator::get().nextId();
 }
 
-void Board::newRound(int32 maxPip) {
-  assert(maxPip >= 0);
+void Board::newRound(int32 maxPips) {
+  assert(maxPips >= 0);
 
   for (auto& kv : m_playerTrains) {
     kv.second.newRound();
@@ -25,8 +27,9 @@ void Board::newRound(int32 maxPip) {
   m_tilePool.clear();
   m_publicTrain.newRound();
   m_publicTrain.m_isPublic = true;
+  m_centerTile = {};
 
-  for (int32 highPip = 0; highPip <= maxPip; highPip++) {
+  for (int32 highPip = 0; highPip <= maxPips; highPip++) {
     for (int32 lowPip = 0; lowPip <= highPip; lowPip++) {
       m_tilePool.emplace_back(highPip, lowPip);
     }

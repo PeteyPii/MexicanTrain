@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include "Common.h"
 
 
@@ -13,3 +14,5 @@ public:
 
 private:
 };
+
+std::ostream& operator<<(std::ostream& out, const Tile& tile);

@@ -14,5 +14,5 @@ public:
 private:
   IdentityGenerator();
 
-  id m_nextId = 0;
+  id m_nextId = NULL_ID + 1;
 };

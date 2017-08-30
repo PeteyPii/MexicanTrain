@@ -11,9 +11,9 @@ class Player;
 
 
 struct TilePlay {
-  TilePlay(id tileId, id trainId) : m_tileId(tileId), m_trainId(trainId) {}
+  TilePlay(id tileId, id placeId) : m_tileId(tileId), m_placeId(placeId) {}
   id m_tileId;
-  id m_trainId;
+  id m_placeId;
 };
 
 class PlayerAI {
@@ -26,12 +26,13 @@ public:
   virtual void notifyGameEnd();
   virtual void notifyRoundStart();
   virtual void notifyRoundEnd();
-  virtual void notifyTilePlay(id playerId, id trainId, id tileId);
+  virtual void notifyTilePlay(id playerId, id placeId, id tileId);
   virtual void notifyTileDraw(id playerId);
 
-protected:
   const Player& m_player;
   const std::vector<EnemyPlayer>& m_enemyPlayers;
+
+protected:
   const Board& m_board;
   const GameSettings& m_gameSettings;
 };

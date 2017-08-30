@@ -1,6 +1,7 @@
 #include "LoggingPlayerAI.h"
 
 #include <sstream>
+#include <string>
 #include "Board.h"
 #include "Player.h"
 
@@ -43,11 +44,15 @@ void LoggingPlayerAI::notifyRoundEnd() {
   }
 }
 
-void LoggingPlayerAI::notifyTilePlay(id playerId, id trainId, id tileId) {
+void LoggingPlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
   if (m_out) {
-    const Tile& tilePlayed = m_board.getTrainById(trainId).m_tiles.back();
-    *m_out << messagePrefix() << "{" << playerId << "} played {" <<
-      tileId << "}=[" << tilePlayed.m_highPip << ":" << tilePlayed.m_lowPip << "] onto {" << trainId << "}.\n";
+    std::string tileStr;
+    if (placeId == m_board.m_centerPlaceId) {
+      tileStr = toString(*m_board.m_centerTile);
+    } else {
+      tileStr = toString(m_board.getTrainById(placeId).m_tiles.back());
+    }
+    *m_out << messagePrefix() << "{" << playerId << "} played {" << tileId << "}=" << tileStr << " onto {" << placeId << "}.\n";
   }
 }
 

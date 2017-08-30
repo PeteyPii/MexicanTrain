@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <experimental/optional>
 #include <vector>
 #include "Common.h"
 #include "Player.h"
@@ -8,11 +9,10 @@
 #include "Train.h"
 
 
-// Represents all the dominos on the table.
 class Board {
 public:
   Board(const std::vector<Player>& players);
-  void newRound(int32 maxPip);
+  void newRound(int32 maxPips);
   uint32 poolSize() const;
   Tile dealTile();
   Train& getTrainById(id trainId);
@@ -20,6 +20,8 @@ public:
 
   std::map<id, Train> m_playerTrains;
   Train m_publicTrain;
+  std::experimental::optional<Tile> m_centerTile;
+  id m_centerPlaceId;
 
 private:
   std::vector<Tile> m_tilePool;

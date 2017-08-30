@@ -29,7 +29,7 @@ void PlayerAI::notifyRoundStart() {
 void PlayerAI::notifyRoundEnd() {
 }
 
-void PlayerAI::notifyTilePlay(id playerId, id trainId, id tileId) {
+void PlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
 }
 
 void PlayerAI::notifyTileDraw(id playerId) {
