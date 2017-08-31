@@ -132,6 +132,7 @@ void GameAdmin::runGame(
     bool roundOver = false;
     while (!roundOver) {
       Player& currPlayer = players[playerTurn];
+      Train& currPlayerTrain = board.getTrainById(currPlayer.m_id);
       if (activeDoubles) {
         Train& doublesTrain = board.getTrainById(activeDoublesTrainId);
         int32 pips = doublesTrain.m_tiles.back().m_tile.m_highPips;
@@ -146,7 +147,8 @@ void GameAdmin::runGame(
         if (hasPlay) {
           while (true) {
             TilePlay tilePlay = currPlayer.m_ai->playTile();
-            auto tileIt = find_id(currPlayer.m_hand.begin(), currPlayer.m_hand.end(), [&](const Tile& tile) { return tile.m_id == tilePlay.m_tileId; });
+            Tile tilePlayed = tilePlay.m_tile;
+            auto tileIt = find_id(currPlayer.m_hand.begin(), currPlayer.m_hand.end(), [&] (const Tile& tile) { return tile.m_id == tilePlay.m_tileId; });
             bool validPlay = tileIt != currPlayer.m_hand.end() &&
               (tileIt->m_highPips == pips || tileIt->m_lowPips == pips) &&
               tilePlay.m_placeId == activeDoublesTrainId;
@@ -156,16 +158,26 @@ void GameAdmin::runGame(
               for (auto& ai : playerAis) {
                 ai->notifyTilePlay(currPlayer.m_id, tilePlay->m_placeId, tilePlay->m_tileId);
               }
+              if (tilePlay->m_placeId == currPlayerTrain.m_id) {
+                currPlayerTrain.m_isPublic = false;
+              }
               lastActionTurn = playerTurn;
+              activeDoubles = false;
+              activeDoublesTrainId = NULL_ID;
               if (currPlayer->m_hand.size() == 0) {
                 roundOver = true;
-              } else if () {  // TODO: ending point
+              } else if (tilePlayed.m_highPips == tilePlayed.m_lowPips) {
+                activeDoubles = true;
+                activeDoublesTrainId = tilePlay.m_placeId;
+              } else {
+
               }
               break;
             }
             playerIt->m_ai->message("You must play a valid tile from your hand onto the active doubles.");
           }
         } else {
+          currPlayerTrain.m_isPublic = true;
           if (board.poolSize() > 0) {
             Tile tile = board.dealTile();
             currPlayer.m_hand.push_back(tile);
@@ -175,13 +187,10 @@ void GameAdmin::runGame(
             lastActionTurn = playerTurn;
             playerTurn = (playerTurn + 1) % players.size();
           } else {
-            if (lastActionTurn == playerTurn) {
-              assert(false);  // this should not happen (the doubles would not have been set active then)
-            } else {
-              playerTurn = (playerTurn + 1) % players.size();
-              for (auto& ai : playerAis) {
-                ai->notifyPassTurn(currPlayer.m_id);
-              }
+            assert(lastActionTurn == playerTurn);  // this should not happen (the doubles would not have been set active then)
+            playerTurn = (playerTurn + 1) % players.size();
+            for (auto& ai : playerAis) {
+              ai->notifyPassTurn(currPlayer.m_id);
             }
           }
         }
@@ -202,7 +211,7 @@ void GameAdmin::runGame(
       } else {
         bool hasPlay = false;
         for (auto& tile : currPlayer.m_hand) {
-          if (tile.m_highPips == board.m_centerTile->m_highPips || tile
+          if (tile.m_highPips == board.m_centerTile->m_highPips || tile // continue here
         }
       }
     }
