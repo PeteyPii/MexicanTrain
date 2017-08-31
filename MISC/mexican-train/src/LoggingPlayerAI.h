@@ -23,6 +23,7 @@ public:
   virtual void notifyRoundEnd() override;
   virtual void notifyTilePlay(id playerId, id trainId, id tileId) override;
   virtual void notifyTileDraw(id playerId) override;
+  virtual void notifyPassTurn(id playerId) override;
 
 protected:
   std::ostream* m_out;

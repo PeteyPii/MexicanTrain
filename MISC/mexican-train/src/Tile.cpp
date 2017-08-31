@@ -4,11 +4,14 @@
 #include "IdentityGenerator.h"
 
 
-Tile::Tile(int32 highPip, int32 lowPip) : m_highPip(highPip), m_lowPip(lowPip) {
-  assert(m_highPip >= m_lowPip);
-  m_id = IdentityGenerator::get().nextId();
+Tile::Tile(int32 highPip, int32 lowPip)
+  : m_id(IdentityGenerator::get().nextId()),
+  m_highPips(highPip),
+  m_lowPips(lowPip) {
+  assert(m_highPips >= m_lowPips);
+  m_id = ;
 }
 
 std::ostream& operator<<(std::ostream& out, const Tile& tile) {
-  return out << "[" << tile.m_highPip << ":" << tile.m_lowPip << "]";
+  return out << "[" << tile.m_highPips << ":" << tile.m_lowPips << "]";
 }

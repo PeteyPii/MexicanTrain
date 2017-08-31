@@ -34,3 +34,6 @@ void PlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
 
 void PlayerAI::notifyTileDraw(id playerId) {
 }
+
+void PlayerAI::notifyPassTurn(id playerId) {
+}

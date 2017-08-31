@@ -58,7 +58,17 @@ void LoggingPlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
 
 void LoggingPlayerAI::notifyTileDraw(id playerId) {
   if (m_out) {
-    *m_out << messagePrefix() << "{" << playerId << "} drew a tile.\n";
+    if (m_player.m_id == playerId) {
+      *m_out << messagePrefix() << "{" << playerId << "} drew " << m_player.m_hand.back() << ".\n";
+    } else {
+      *m_out << messagePrefix() << "{" << playerId << "} drew a tile.\n";
+    }
+  }
+}
+
+void LoggingPlayerAI::notifyPassTurn(id playerId) {
+  if (m_out) {
+    *m_out << messagePrefix() << "{" << playerId << "} passed their turn.\n";
   }
 }
 

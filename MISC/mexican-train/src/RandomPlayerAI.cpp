@@ -20,3 +20,8 @@ TilePlay RandomPlayerAI::playTile() {
   id placeId = m_allPlaceIds[RNG::get().m_mt() % m_allPlaceIds.size()];
   return TilePlay(tileId, placeId);
 }
+
+void RandomPlayerAI::message(const std::string& msg) {
+  // LoggingPlayerAI::message(msg);
+}
+

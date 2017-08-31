@@ -28,6 +28,7 @@ public:
   virtual void notifyRoundEnd();
   virtual void notifyTilePlay(id playerId, id placeId, id tileId);
   virtual void notifyTileDraw(id playerId);
+  virtual void notifyPassTurn(id playerId);
 
   const Player& m_player;
   const std::vector<EnemyPlayer>& m_enemyPlayers;

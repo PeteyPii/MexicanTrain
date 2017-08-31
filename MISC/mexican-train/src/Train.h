@@ -5,14 +5,22 @@
 #include "Tile.h"
 
 
+struct TrainTile {
+  TrainTile(Tile tile, bool isFlipped) : m_tile(tile), m_isFlipped(isFlipped) {}
+
+  Tile m_tile;
+  bool m_isFlipped;  // flipped to low-high direction
+};
+
 class Train {
 public:
   Train();
   void newRound();
 
-  id m_id;
-  std::vector<Tile> m_tiles;
+  const id m_id;
+  std::vector<TrainTile> m_tiles;
   bool m_isPublic = false;
+
 
 private:
 };

@@ -3,8 +3,7 @@
 #include "IdentityGenerator.h"
 
 
-Train::Train() {
-  m_id = IdentityGenerator::get().nextId();
+Train::Train() : m_id(IdentityGenerator::get().nextId()) {
 }
 
 void Train::newRound() {
