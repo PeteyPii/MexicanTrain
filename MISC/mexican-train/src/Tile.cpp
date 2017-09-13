@@ -9,7 +9,6 @@ Tile::Tile(int32 highPip, int32 lowPip)
   m_highPips(highPip),
   m_lowPips(lowPip) {
   assert(m_highPips >= m_lowPips);
-  m_id = ;
 }
 
 std::ostream& operator<<(std::ostream& out, const Tile& tile) {

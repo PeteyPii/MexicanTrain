@@ -50,7 +50,7 @@ void LoggingPlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
     if (placeId == m_board.m_centerPlaceId) {
       tileStr = toString(*m_board.m_centerTile);
     } else {
-      tileStr = toString(m_board.getTrainById(placeId).m_tiles.back());
+      tileStr = toString(m_board.getTrainById(placeId).m_tiles.back().m_tile);
     }
     *m_out << messagePrefix() << "{" << playerId << "} played {" << tileId << "}=" << tileStr << " onto {" << placeId << "}.\n";
   }

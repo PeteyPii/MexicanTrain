@@ -132,7 +132,7 @@ void GameAdmin::runGame(
     bool roundOver = false;
     while (!roundOver) {
       Player& currPlayer = players[playerTurn];
-      Train& currPlayerTrain = board.getTrainById(currPlayer.m_id);
+      Train& currPlayerTrain = board.m_playerTrains[currPlayer.m_id];
       if (activeDoubles) {
         Train& doublesTrain = board.getTrainById(activeDoublesTrainId);
         int32 pips = doublesTrain.m_tiles.back().m_tile.m_highPips;
@@ -147,34 +147,35 @@ void GameAdmin::runGame(
         if (hasPlay) {
           while (true) {
             TilePlay tilePlay = currPlayer.m_ai->playTile();
-            Tile tilePlayed = tilePlay.m_tile;
-            auto tileIt = find_id(currPlayer.m_hand.begin(), currPlayer.m_hand.end(), [&] (const Tile& tile) { return tile.m_id == tilePlay.m_tileId; });
+            auto tileIt = find_if(currPlayer.m_hand.begin(), currPlayer.m_hand.end(), [&] (const Tile& tile) { return tile.m_id == tilePlay.m_tileId; });
             bool validPlay = tileIt != currPlayer.m_hand.end() &&
               (tileIt->m_highPips == pips || tileIt->m_lowPips == pips) &&
               tilePlay.m_placeId == activeDoublesTrainId;
             if (validPlay) {
+              Tile playedTile = *tileIt;
               doublesTrain.m_tiles.emplace_back(*tileIt, tileIt->m_highPips != pips);
               currPlayer.m_hand.erase(tileIt);
-              for (auto& ai : playerAis) {
-                ai->notifyTilePlay(currPlayer.m_id, tilePlay->m_placeId, tilePlay->m_tileId);
-              }
-              if (tilePlay->m_placeId == currPlayerTrain.m_id) {
+              if (tilePlay.m_placeId == currPlayerTrain.m_id) {
                 currPlayerTrain.m_isPublic = false;
+              }
+              for (auto& ai : playerAis) {
+                ai->notifyTilePlay(currPlayer.m_id, tilePlay.m_placeId, tilePlay.m_tileId);
               }
               lastActionTurn = playerTurn;
               activeDoubles = false;
               activeDoublesTrainId = NULL_ID;
-              if (currPlayer->m_hand.size() == 0) {
+              if (currPlayer.m_hand.size() == 0) {
                 roundOver = true;
-              } else if (tilePlayed.m_highPips == tilePlayed.m_lowPips) {
+              } else if (playedTile.m_highPips == playedTile.m_lowPips) {
                 activeDoubles = true;
                 activeDoublesTrainId = tilePlay.m_placeId;
+                // TODO: Make sure therse is a domino left to play on the doubles.
               } else {
-
+                playerTurn = (playerTurn + 1) % players.size();
               }
               break;
             }
-            playerIt->m_ai->message("You must play a valid tile from your hand onto the active doubles.");
+            currPlayer.m_ai->message("You must play a valid tile from your hand onto the active doubles.");
           }
         } else {
           currPlayerTrain.m_isPublic = true;
@@ -182,36 +183,158 @@ void GameAdmin::runGame(
             Tile tile = board.dealTile();
             currPlayer.m_hand.push_back(tile);
             for (auto& ai : playerAis) {
-              ai->notifyTileDraw(player.m_id);
+              ai->notifyTileDraw(currPlayer.m_id);
             }
             lastActionTurn = playerTurn;
             playerTurn = (playerTurn + 1) % players.size();
           } else {
-            assert(lastActionTurn == playerTurn);  // this should not happen (the doubles would not have been set active then)
+            assert(lastActionTurn != playerTurn);  // this should not happen (the doubles would not have been set active then)
             playerTurn = (playerTurn + 1) % players.size();
             for (auto& ai : playerAis) {
               ai->notifyPassTurn(currPlayer.m_id);
             }
           }
         }
-      } else if (board.m_playerTrains[currPlayer.m_id].m_tiles.size() > 0) {
+      } else if (currPlayerTrain.m_tiles.size() > 0) {
         std::set<int32> playablePips;
         for (auto& kv : board.m_playerTrains) {
-          if (kv.first == currPlayer.m_id || fv.second.m_isPublic) {
+          if (kv.first == currPlayer.m_id || kv.second.m_isPublic) {
             if (kv.second.m_tiles.size() > 0) {
               TrainTile& endTrainTile = kv.second.m_tiles.back();
-              int32 trainPips = endTrainTile.m_isFlipped ? endTrainTile.m_tile.m_lowPips : endTrainTile.m_tile.m_highPips;
-              playablePips.insert(playablePips);
+              int32 trainPips = endTrainTile.m_isFlipped ? endTrainTile.m_tile.m_highPips : endTrainTile.m_tile.m_lowPips;
+              playablePips.insert(trainPips);
             } else {
               playablePips.insert(board.m_centerTile->m_highPips);
             }
           }
         }
-        board.m_playerTrains[currPlayer.m_id]
+        if (board.m_publicTrain.m_tiles.size() > 0) {
+          TrainTile& endTrainTile = board.m_publicTrain.m_tiles.back();
+          int32 trainPips = endTrainTile.m_isFlipped ? endTrainTile.m_tile.m_highPips : endTrainTile.m_tile.m_lowPips;
+          playablePips.insert(trainPips);
+        } else {
+          playablePips.insert(board.m_centerTile->m_highPips);
+        }
+
+        bool hasPlay = false;
+        for (auto& tile : currPlayer.m_hand) {
+          if (playablePips.count(tile.m_highPips) > 0 || playablePips.count(tile.m_lowPips) > 0) {
+            hasPlay = true;
+            break;
+          }
+        }
+
+        if (hasPlay) {
+          while (true) {
+            TilePlay tilePlay = currPlayer.m_ai->playTile();
+            auto tileIt = find_if(currPlayer.m_hand.begin(), currPlayer.m_hand.end(), [&] (const Tile& tile) { return tile.m_id == tilePlay.m_tileId; });
+            bool validPlay = tileIt != currPlayer.m_hand.end() &&
+              board.trainExists(tilePlay.m_placeId);
+            if (validPlay) {
+              Train& targetTrain = board.getTrainById(tilePlay.m_placeId);
+              int32 endPips = targetTrain.m_tiles.size() > 0 ?
+                (targetTrain.m_tiles.back().m_isFlipped ? targetTrain.m_tiles.back().m_tile.m_highPips : targetTrain.m_tiles.back().m_tile.m_lowPips) :
+                board.m_centerTile->m_highPips;
+              if (tileIt->m_highPips == endPips || tileIt->m_lowPips == endPips) {
+                Tile playedTile = *tileIt;
+                targetTrain.m_tiles.emplace_back(*tileIt, tileIt->m_highPips != endPips);
+                currPlayer.m_hand.erase(tileIt);
+                if (targetTrain.m_id == currPlayerTrain.m_id) {
+                  currPlayerTrain.m_isPublic = false;
+                }
+                for (auto& ai : playerAis) {
+                  ai->notifyTilePlay(currPlayer.m_id, tilePlay.m_placeId, tilePlay.m_tileId);
+                }
+                lastActionTurn = playerTurn;
+                if (currPlayer.m_hand.size() == 0) {
+                  roundOver = true;
+                } else if (playedTile.m_highPips == playedTile.m_lowPips) {
+                  // TODO: Need to check if there's another domino that can be played on this.
+                  activeDoubles = true;
+                  activeDoublesTrainId = currPlayerTrain.m_id;
+                } else {
+                  playerTurn = (playerTurn + 1) % players.size();
+                }
+                break;
+              }
+            }
+            currPlayer.m_ai->message("You must make a valid play.");
+          }
+        } else {
+          currPlayerTrain.m_isPublic = true;
+          if (board.poolSize() > 0) {
+            Tile tile = board.dealTile();
+            currPlayer.m_hand.push_back(tile);
+            for (auto& ai : playerAis) {
+              ai->notifyTileDraw(currPlayer.m_id);
+            }
+            lastActionTurn = playerTurn;
+            playerTurn = (playerTurn + 1) % players.size();
+          } else if (lastActionTurn == playerTurn) {
+            roundOver = true;
+          } else {
+            playerTurn = (playerTurn + 1) % players.size();
+            for (auto& ai : playerAis) {
+              ai->notifyPassTurn(currPlayer.m_id);
+            }
+          }
+        }
       } else {
         bool hasPlay = false;
         for (auto& tile : currPlayer.m_hand) {
-          if (tile.m_highPips == board.m_centerTile->m_highPips || tile // continue here
+          if (tile.m_highPips == board.m_centerTile->m_highPips || tile.m_lowPips == board.m_centerTile->m_highPips) {
+            hasPlay = true;
+            break;
+          }
+        }
+
+        if (hasPlay) {
+          while (true) {
+            TilePlay tilePlay = currPlayer.m_ai->playTile();
+            auto tileIt = find_if(currPlayer.m_hand.begin(), currPlayer.m_hand.end(), [&] (const Tile& tile) { return tile.m_id == tilePlay.m_tileId; });
+            bool validPlay = tileIt != currPlayer.m_hand.end() &&
+              tilePlay.m_placeId == currPlayerTrain.m_id &&
+              (tileIt->m_highPips == board.m_centerTile->m_highPips || tileIt->m_lowPips == board.m_centerTile->m_highPips);
+            if (validPlay) {
+              Tile playedTile = *tileIt;
+              currPlayerTrain.m_tiles.emplace_back(*tileIt, tileIt->m_highPips != board.m_centerTile->m_highPips);
+              currPlayer.m_hand.erase(tileIt);
+              currPlayerTrain.m_isPublic = false;
+              for (auto& ai : playerAis) {
+                ai->notifyTilePlay(currPlayer.m_id, tilePlay.m_placeId, tilePlay.m_tileId);
+              }
+              lastActionTurn = playerTurn;
+              if (currPlayer.m_hand.size() == 0) {
+                roundOver = true;
+              } else if (playedTile.m_highPips == playedTile.m_lowPips) {
+                // TODO: Need to check if there's another domino that can be played on this.
+                activeDoubles = true;
+                activeDoublesTrainId = currPlayerTrain.m_id;
+              } else {
+                playerTurn = (playerTurn + 1) % players.size();
+              }
+              break;
+            }
+            currPlayer.m_ai->message("You must play onto your own train first.");
+          }
+        } else {
+          currPlayerTrain.m_isPublic = true;
+          if (board.poolSize() > 0) {
+            Tile tile = board.dealTile();
+            currPlayer.m_hand.push_back(tile);
+            for (auto& ai : playerAis) {
+              ai->notifyTileDraw(currPlayer.m_id);
+            }
+            lastActionTurn = playerTurn;
+            playerTurn = (playerTurn + 1) % players.size();
+          } else if (lastActionTurn == playerTurn) {
+            roundOver = true;
+          } else {
+            playerTurn = (playerTurn + 1) % players.size();
+            for (auto& ai : playerAis) {
+              ai->notifyPassTurn(currPlayer.m_id);
+            }
+          }
         }
       }
     }

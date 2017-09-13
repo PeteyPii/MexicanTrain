@@ -8,7 +8,7 @@ class Tile {
 public:
   Tile(int32 highPip, int32 lowPip);
 
-  const id m_id;
+  id m_id;
   int32 m_highPips;
   int32 m_lowPips;
 

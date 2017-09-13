@@ -59,3 +59,7 @@ const Train& Board::getTrainById(id trainId) const {
   assert(it != m_idToTrain.end());
   return *it->second;
 }
+
+bool Board::trainExists(id trainId) const {
+  return m_idToTrain.count(trainId) > 0;
+}

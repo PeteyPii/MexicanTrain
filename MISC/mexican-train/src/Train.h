@@ -17,7 +17,7 @@ public:
   Train();
   void newRound();
 
-  const id m_id;
+  id m_id;
   std::vector<TrainTile> m_tiles;
   bool m_isPublic = false;
 

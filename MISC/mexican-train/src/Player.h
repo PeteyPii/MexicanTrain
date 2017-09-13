@@ -13,7 +13,7 @@ public:
   Player();
   void newRound();
 
-  const id m_id;
+  id m_id;
   int32 m_score = 0;
   std::vector<Tile> m_hand;
   const EnemyPlayer m_enemyView;

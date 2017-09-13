@@ -17,6 +17,7 @@ public:
   Tile dealTile();
   Train& getTrainById(id trainId);
   const Train& getTrainById(id trainId) const;
+  bool trainExists(id trainId) const;
 
   std::map<id, Train> m_playerTrains;
   Train m_publicTrain;
