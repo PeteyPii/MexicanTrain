@@ -23,6 +23,9 @@ void PlayerAI::notifyGameStart() {
 void PlayerAI::notifyGameEnd() {
 }
 
+void PlayerAI::notifyGameResult(int32 placeFinished) {
+}
+
 void PlayerAI::notifyRoundStart() {
 }
 

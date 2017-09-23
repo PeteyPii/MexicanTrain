@@ -19,6 +19,7 @@ public:
   virtual void message(const std::string& msg) override;
   virtual void notifyGameStart() override;
   virtual void notifyGameEnd() override;
+  virtual void notifyGameResult(int32 placeFinished) override;
   virtual void notifyRoundStart() override;
   virtual void notifyRoundEnd() override;
   virtual void notifyTilePlay(id playerId, id trainId, id tileId) override;

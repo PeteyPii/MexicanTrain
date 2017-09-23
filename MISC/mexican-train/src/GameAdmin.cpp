@@ -150,6 +150,13 @@ void GameAdmin::runGame(
       }
     }
 
+    for (auto& player : players) {
+      for (auto& tile : player.m_hand) {
+        player.m_score += tile.m_highPips;
+        player.m_score += tile.m_lowPips;
+      }
+    }
+
     for (auto& ai : playerAis) {
       ai->notifyRoundEnd();
     }
@@ -157,6 +164,27 @@ void GameAdmin::runGame(
 
   for (auto& ai : playerAis) {
     ai->notifyGameEnd();
+  }
+
+  std::sort(players.begin(), players.end(), [] (const Player& p1, const Player& p2) -> bool {
+    if (p1.m_score < p2.m_score) {
+      return true;
+    } else if (p1.m_score == p2.m_score) {
+      return p1.m_roundsWon > p2.m_roundsWon;
+    } else {
+      return false;
+    }
+  });
+  auto startIt = players.begin();
+  while (startIt != players.end()) {
+    auto endIt = startIt + 1;
+    while (endIt != players.end() && endIt->m_score == startIt->m_score && endIt->m_roundsWon == startIt->m_roundsWon) {
+      endIt++;
+    }
+    std::shuffle(startIt, endIt, RNG::get().m_mt);
+  }
+  for (int32 i = 0; i < (int32) players.size(); i++) {
+    players[i].m_ai->notifyGameResult(i + 1);
   }
 }
 

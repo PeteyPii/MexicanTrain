@@ -32,6 +32,20 @@ void LoggingPlayerAI::notifyGameEnd() {
   }
 }
 
+void LoggingPlayerAI::notifyGameResult(int32 placeFinished) {
+  if (m_out) {
+    std::string suffix = "th";
+    if (placeFinished == 1) {
+      suffix = "st";
+    } else if (placeFinished == 2) {
+      suffix = "nd";
+    } else if (placeFinished == 3) {
+      suffix = "rd";
+    }
+    *m_out << messagePrefix() << "Finished " << placeFinished << suffix << ".\n";
+  }
+}
+
 void LoggingPlayerAI::notifyRoundStart() {
   if (m_out) {
     *m_out << messagePrefix() << "Round started.\n";

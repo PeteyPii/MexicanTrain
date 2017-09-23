@@ -16,6 +16,7 @@ public:
   RandomPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out = nullptr);
   virtual ~RandomPlayerAI();
   virtual TilePlay playTile() override;
+  virtual void notifyGameResult(int32 placeFinished) override;
   virtual void message(const std::string& msg) override;
 
 private:

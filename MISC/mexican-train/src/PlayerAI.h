@@ -24,6 +24,7 @@ public:
   virtual void message(const std::string& msg);
   virtual void notifyGameStart();
   virtual void notifyGameEnd();
+  virtual void notifyGameResult(int32 placeFinished);
   virtual void notifyRoundStart();
   virtual void notifyRoundEnd();
   virtual void notifyTilePlay(id playerId, id placeId, id tileId);

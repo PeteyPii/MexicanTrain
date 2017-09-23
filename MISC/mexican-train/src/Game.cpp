@@ -124,8 +124,19 @@ void Game::playTile(Player& player, std::set<id> validTrainIds, const std::strin
         if (player.m_hand.size() == 0) {
           *roundOver = true;
         } else if (playedTile.m_highPips == playedTile.m_lowPips) {
+          int32 countPlayed = 0;
+          if (m_board.m_centerTile->m_highPips == playedTile.m_highPips) {
+            countPlayed += 1;
+          }
+          for (auto& kv : m_board.m_playerTrains) {
+            for (auto& trainTile : kv.second.m_tiles) {
+              if () { // CONT HERE
+              }
+            }
+          }
           *activeDoubles = true;
           *activeDoublesTrainId = tilePlay.m_placeId;
+
           // TODO: Make sure therse is a domino left to play on the doubles.
         }
         break;

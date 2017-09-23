@@ -2,6 +2,7 @@
 
 #include "Board.h"
 #include "RNG.h"
+#include "StatTracker.h"
 
 
 RandomPlayerAI::RandomPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out)
@@ -20,6 +21,14 @@ TilePlay RandomPlayerAI::playTile() {
   id tileId = m_player.m_hand[RNG::get().m_mt() % m_player.m_hand.size()].m_id;
   id placeId = m_allPlaceIds[RNG::get().m_mt() % m_allPlaceIds.size()];
   return TilePlay(tileId, placeId);
+}
+
+void RandomPlayerAI::notifyGameResult(int32 placeFinished) {
+  LoggingPlayerAI::notifyGameResult(placeFinished);
+  int32 playerCount = 1 + enemyPlayers.size();
+  Stats& stats = StatTracker::get().m_aiStats["RandomPlayerAI"][playerCount];
+  stats.m_finishPlaceCounts[placeFinished] += 1;
+  stats.m_scores.push_back(m_player.m_score);
 }
 
 void RandomPlayerAI::message(const std::string& msg) {

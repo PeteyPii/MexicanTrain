@@ -10,6 +10,7 @@ public:
   EnemyPlayer(const Player& player);
   id playerId() const;
   int32 score() const;
+  int32 roundsWon() const;
   uint32 handSize() const;
 
 private:
