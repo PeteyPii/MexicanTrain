@@ -3,6 +3,7 @@
 #include <ostream>
 #include <map>
 #include <string>
+#include <vector>
 #include "Common.h"
 
 
@@ -17,7 +18,7 @@ public:
 
   StatTracker(const StatTracker& other) = delete;
   StatTracker& operator=(const StatTracker& other) = delete;
-  std::map<std::string, std::map<Stats>> m_aiStats;
+  std::map<std::string, std::map<int32, Stats>> m_aiStats;
 
 private:
   StatTracker();

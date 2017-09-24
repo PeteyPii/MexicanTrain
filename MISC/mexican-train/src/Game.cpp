@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include "PlayerAI.h"
+#include "RNG.h"
 
 Game::Game(GameSettings gameSettings, Board& board, std::vector<Player>& players)
   : m_gameSettings(gameSettings),
@@ -38,13 +39,27 @@ int32 Game::playCenterTile(std::vector<int32>* incompleteRounds) {
       }
     }
 
-    for (auto& player : m_players) {
-      // TODO: Make leading player(s) draw more if the pool is not evenly divisible.
-      if (m_board.poolSize() > 0) {
+    if (m_board.poolSize() >= m_players.size()) {
+      for (auto& player : m_players) {
         Tile tile = m_board.dealTile();
         player.m_hand.push_back(tile);
         for (auto& notifiee : m_players) {
           notifiee.m_ai->notifyTileDraw(player.m_id);
+        }
+      }
+    } else {
+      std::vector<int32> randomPlayerIndices;
+      for (int i = 0; i < (int32) m_players.size(); i++) {
+        randomPlayerIndices.push_back(i);
+      }
+      std::shuffle(randomPlayerIndices.begin(), randomPlayerIndices.end(), RNG::get().m_mt);
+      for (int32 randomIndex : randomPlayerIndices) {
+        if (m_board.poolSize() > 0) {
+          Tile tile = m_board.dealTile();
+          m_players[randomIndex].m_hand.push_back(tile);
+          for (auto& notifiee : m_players) {
+            notifiee.m_ai->notifyTileDraw(m_players[randomIndex].m_id);
+          }
         }
       }
     }
@@ -130,14 +145,20 @@ void Game::playTile(Player& player, std::set<id> validTrainIds, const std::strin
           }
           for (auto& kv : m_board.m_playerTrains) {
             for (auto& trainTile : kv.second.m_tiles) {
-              if () { // CONT HERE
+              if (trainTile.m_tile.m_highPips == playedTile.m_highPips || trainTile.m_tile.m_lowPips == playedTile.m_highPips) {
+                countPlayed += 1;
               }
             }
           }
-          *activeDoubles = true;
-          *activeDoublesTrainId = tilePlay.m_placeId;
-
-          // TODO: Make sure therse is a domino left to play on the doubles.
+          for (auto& trainTile : m_board.m_publicTrain.m_tiles) {
+            if (trainTile.m_tile.m_highPips == playedTile.m_highPips || trainTile.m_tile.m_lowPips == playedTile.m_highPips) {
+              countPlayed += 1;
+            }
+          }
+          if (countPlayed == m_gameSettings.m_maxPips + 1) {
+            *activeDoubles = true;
+            *activeDoublesTrainId = tilePlay.m_placeId;
+          }
         }
         break;
       }

@@ -13,7 +13,7 @@ class PlayerAI;
 
 class GameAdmin {
 public:
-  GameAdmin();
+  GameAdmin(std::ostream* out);
   void runGame(
     const GameSettings& gameSettings,
     std::function<std::vector<std::unique_ptr<PlayerAI>>(
@@ -24,4 +24,5 @@ public:
   );
 
 private:
+  std::ostream* m_out;
 };

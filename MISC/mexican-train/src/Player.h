@@ -11,7 +11,10 @@ class PlayerAI;
 class Player {
 public:
   Player();
+  Player(Player&& player);
   void newRound();
+
+  Player& operator=(Player&& player);
 
   id m_id;
   int32 m_score = 0;

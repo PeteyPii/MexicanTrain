@@ -7,11 +7,12 @@
 #include "Board.h"
 #include "Game.h"
 #include "PlayerAI.h"
+#include "RNG.h"
 
 using namespace std;
 
 
-GameAdmin::GameAdmin() {
+GameAdmin::GameAdmin(std::ostream* out) : m_out(out) {
 }
 
 void GameAdmin::runGame(
@@ -22,9 +23,11 @@ void GameAdmin::runGame(
     const Board&
   )> aiCreator
 ) {
-  cout << "Number of players: " << gameSettings.m_numberOfPlayers << endl;
-  cout << "Max domino pip count: " << gameSettings.m_maxPips << endl;
-  cout << "Starting hand size: " << gameSettings.m_startingHandSize << endl;
+  if (m_out) {
+    *m_out << "Number of players: " << gameSettings.m_numberOfPlayers << endl;
+    *m_out << "Max domino pip count: " << gameSettings.m_maxPips << endl;
+    *m_out << "Starting hand size: " << gameSettings.m_startingHandSize << endl;
+  }
 
   if (gameSettings.m_numberOfPlayers < 1 || gameSettings.m_numberOfPlayers > 8) {
     cerr << "There must be 1 - 8 players." << endl;
@@ -166,25 +169,31 @@ void GameAdmin::runGame(
     ai->notifyGameEnd();
   }
 
-  std::sort(players.begin(), players.end(), [] (const Player& p1, const Player& p2) -> bool {
-    if (p1.m_score < p2.m_score) {
+  std::vector<int32> playerIndices;
+  for (int32 i = 0; i < (int32) players.size(); i++) {
+    playerIndices.push_back(i);
+  }
+
+  std::sort(playerIndices.begin(), playerIndices.end(), [&] (int32 p1, int32 p2) -> bool {
+    if (players[p1].m_score < players[p2].m_score) {
       return true;
-    } else if (p1.m_score == p2.m_score) {
-      return p1.m_roundsWon > p2.m_roundsWon;
+    } else if (players[p1].m_score == players[p2].m_score) {
+      return players[p1].m_roundsWon > players[p2].m_roundsWon;
     } else {
       return false;
     }
   });
-  auto startIt = players.begin();
-  while (startIt != players.end()) {
+  auto startIt = playerIndices.begin();
+  while (startIt != playerIndices.end()) {
     auto endIt = startIt + 1;
-    while (endIt != players.end() && endIt->m_score == startIt->m_score && endIt->m_roundsWon == startIt->m_roundsWon) {
+    while (endIt != playerIndices.end() && players[*endIt].m_score == players[*startIt].m_score && players[*endIt].m_roundsWon == players[*startIt].m_roundsWon) {
       endIt++;
     }
     std::shuffle(startIt, endIt, RNG::get().m_mt);
+    startIt = endIt;
   }
   for (int32 i = 0; i < (int32) players.size(); i++) {
-    players[i].m_ai->notifyGameResult(i + 1);
+    players[playerIndices[i]].m_ai->notifyGameResult(i + 1);
   }
 }
 

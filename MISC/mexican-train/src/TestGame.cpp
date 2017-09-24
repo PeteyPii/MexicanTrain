@@ -5,27 +5,57 @@
 #include "GameAdmin.h"
 #include "GameSettings.h"
 #include "RandomPlayerAI.h"
+#include "StatTracker.h"
+
+using namespace std;
 
 
 int main() {
-  GameSettings gameSettings;
-  gameSettings.m_maxPips = 6;
-  gameSettings.m_startingHandSize = 9;
-  gameSettings.m_numberOfPlayers = 1;
+  {
+    // GameSettings gameSettings;
+    // gameSettings.m_maxPips = 6;
+    // gameSettings.m_startingHandSize = 9;
+    // gameSettings.m_numberOfPlayers = 1;
 
-  GameAdmin gameAdmin;
-  gameAdmin.runGame(gameSettings, [&gameSettings] (
-    const std::vector<Player>& players,
-    const std::vector<std::vector<EnemyPlayer>>& enemyPlayerLists,
-    const Board& board
-  ) -> std::vector<std::unique_ptr<PlayerAI>> {
-    assert(players.size() == 1);
-    assert(players.size() == enemyPlayerLists.size());
+    // GameAdmin gameAdmin(&std::cout);
+    // gameAdmin.runGame(gameSettings, [&gameSettings] (
+    //   const std::vector<Player>& players,
+    //   const std::vector<std::vector<EnemyPlayer>>& enemyPlayerLists,
+    //   const Board& board
+    // ) -> std::vector<std::unique_ptr<PlayerAI>> {
+    //   assert(players.size() == enemyPlayerLists.size());
+    //   std::vector<std::unique_ptr<PlayerAI>> playerAis;
+    //   for (int32 i = 0; i < (int32) players.size(); i++) {
+    //     playerAis.emplace_back(std::make_unique<RandomPlayerAI>(players[i], enemyPlayerLists[i], board, gameSettings, &std::cout));
+    //   }
+    //   return playerAis;
+    // });
+  }
 
-    std::vector<std::unique_ptr<PlayerAI>> playerAis;
-    playerAis.emplace_back(std::make_unique<RandomPlayerAI>(players[0], enemyPlayerLists[0], board, gameSettings, &std::cout));
-    return playerAis;
-  });
+  {
+    GameSettings gameSettings;
+    gameSettings.m_maxPips = 6;
+    gameSettings.m_startingHandSize = 9;
+    gameSettings.m_numberOfPlayers = 2;
+
+    GameAdmin gameAdmin(nullptr);
+    for (int32 i = 0; i < 1000; i++) {
+      gameAdmin.runGame(gameSettings, [&gameSettings] (
+        const std::vector<Player>& players,
+        const std::vector<std::vector<EnemyPlayer>>& enemyPlayerLists,
+        const Board& board
+      ) -> std::vector<std::unique_ptr<PlayerAI>> {
+        assert(players.size() == enemyPlayerLists.size());
+        std::vector<std::unique_ptr<PlayerAI>> playerAis;
+        for (int32 i = 0; i < (int32) players.size(); i++) {
+          playerAis.emplace_back(std::make_unique<RandomPlayerAI>(players[i], enemyPlayerLists[i], board, gameSettings, nullptr));
+        }
+        return playerAis;
+      });
+    }
+  }
+
+  std::cout << StatTracker::get();
 
   return 0;
 }

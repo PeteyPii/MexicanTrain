@@ -25,7 +25,7 @@ TilePlay RandomPlayerAI::playTile() {
 
 void RandomPlayerAI::notifyGameResult(int32 placeFinished) {
   LoggingPlayerAI::notifyGameResult(placeFinished);
-  int32 playerCount = 1 + enemyPlayers.size();
+  int32 playerCount = 1 + m_enemyPlayers.size();
   Stats& stats = StatTracker::get().m_aiStats["RandomPlayerAI"][playerCount];
   stats.m_finishPlaceCounts[placeFinished] += 1;
   stats.m_scores.push_back(m_player.m_score);

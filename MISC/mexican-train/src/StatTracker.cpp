@@ -27,4 +27,5 @@ std::ostream& operator<<(std::ostream& out, StatTracker& statTracker) {
       }
     }
   }
+  return out;
 }
