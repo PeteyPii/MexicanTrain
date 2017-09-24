@@ -32,6 +32,5 @@ void RandomPlayerAI::notifyGameResult(int32 placeFinished) {
 }
 
 void RandomPlayerAI::message(const std::string& msg) {
-  // LoggingPlayerAI::message(msg);
 }
 
