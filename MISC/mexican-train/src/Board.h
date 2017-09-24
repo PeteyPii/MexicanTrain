@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <ostream>
 #include <experimental/optional>
 #include <vector>
 #include "Common.h"
@@ -28,3 +29,5 @@ private:
   std::vector<Tile> m_tilePool;
   std::map<id, Train*> m_idToTrain;
 };
+
+std::ostream& operator<<(std::ostream& out, const Board& board);

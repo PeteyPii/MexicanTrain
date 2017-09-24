@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include <vector>
 #include "Common.h"
 #include "EnemyPlayer.h"
@@ -11,10 +12,7 @@ class PlayerAI;
 class Player {
 public:
   Player();
-  Player(Player&& player);
   void newRound();
-
-  Player& operator=(Player&& player);
 
   id m_id;
   int32 m_score = 0;
@@ -22,6 +20,6 @@ public:
   std::vector<Tile> m_hand;
   const EnemyPlayer m_enemyView;
   PlayerAI* m_ai = nullptr;
-
-private:
 };
+
+std::ostream& operator<<(std::ostream& out, const Player& player);

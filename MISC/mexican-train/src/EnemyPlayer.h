@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include "Common.h"
 
 class Player;
@@ -16,3 +17,5 @@ public:
 private:
   const Player& m_player;
 };
+
+std::ostream& operator<<(std::ostream& out, const EnemyPlayer& enemyPlayer);

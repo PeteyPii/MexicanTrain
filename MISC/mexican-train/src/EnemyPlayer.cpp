@@ -21,3 +21,11 @@ int32 EnemyPlayer::roundsWon() const {
 uint32 EnemyPlayer::handSize() const {
   return m_player.m_hand.size();
 }
+
+std::ostream& operator<<(std::ostream& out, const EnemyPlayer& player) {
+  out << "Enemy Player {" << player.playerId() << "}\n";
+  out << "  Points: " << player.score() << "\n";
+  out << "  Rounds won: " << player.roundsWon() << "\n";
+  out << "  Hand size: " << player.handSize() << "\n";
+  return out;
+}

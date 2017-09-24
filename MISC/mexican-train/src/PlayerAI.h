@@ -32,9 +32,9 @@ public:
   virtual void notifyPassTurn(id playerId);
 
   const Player& m_player;
-  const std::vector<EnemyPlayer>& m_enemyPlayers;
 
 protected:
+  const std::vector<EnemyPlayer>& m_enemyPlayers;
   const Board& m_board;
   const GameSettings& m_gameSettings;
 };

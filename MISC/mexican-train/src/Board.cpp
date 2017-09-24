@@ -63,3 +63,19 @@ const Train& Board::getTrainById(id trainId) const {
 bool Board::trainExists(id trainId) const {
   return m_idToTrain.count(trainId) > 0;
 }
+
+std::ostream& operator<<(std::ostream& out, const Board& board) {
+  out << "Board:\n";
+  out << "  Undrawn tiles: " << board.poolSize() << "\n";
+  if (board.m_centerTile) {
+    out << "  Center tile: {" << board.m_centerPlaceId << "} => " << *board.m_centerTile << "\n";
+  } else {
+    out << "  Center tile: {" << board.m_centerPlaceId << "} => NONE\n";
+  }
+  out << "  Public train: " << board.m_publicTrain << "\n";
+  out << "  Player trains:\n";
+  for (auto& it : board.m_playerTrains) {
+    out << "    {" << it.first << "}'s => " << it.second << "\n";
+  }
+  return out;
+}

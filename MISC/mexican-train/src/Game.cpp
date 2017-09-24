@@ -155,7 +155,7 @@ void Game::playTile(Player& player, std::set<id> validTrainIds, const std::strin
               countPlayed += 1;
             }
           }
-          if (countPlayed == m_gameSettings.m_maxPips + 1) {
+          if (countPlayed < m_gameSettings.m_maxPips + 1) {
             *activeDoubles = true;
             *activeDoublesTrainId = tilePlay.m_placeId;
           }

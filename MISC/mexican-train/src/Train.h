@@ -1,16 +1,10 @@
 #pragma once
 
+#include <ostream>
 #include <vector>
 #include "Common.h"
-#include "Tile.h"
+#include "TrainTile.h"
 
-
-struct TrainTile {
-  TrainTile(Tile tile, bool isFlipped) : m_tile(tile), m_isFlipped(isFlipped) {}
-
-  Tile m_tile;
-  bool m_isFlipped;  // flipped to low-high direction
-};
 
 class Train {
 public:
@@ -20,7 +14,6 @@ public:
   id m_id;
   std::vector<TrainTile> m_tiles;
   bool m_isPublic = false;
-
-
-private:
 };
+
+std::ostream& operator<<(std::ostream& out, const Train& train);
