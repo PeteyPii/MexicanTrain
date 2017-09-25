@@ -1,6 +1,7 @@
 #include "RNG.h"
 
 #include <chrono>
+#include <iostream>
 
 
 RNG& RNG::get() {
@@ -9,5 +10,7 @@ RNG& RNG::get() {
 }
 
 RNG::RNG() {
-  m_mt.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  m_mt.seed(seed);
+  std::cout << "RNG seed: " << seed << ".\n";
 }

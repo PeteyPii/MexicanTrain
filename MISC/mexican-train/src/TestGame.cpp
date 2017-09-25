@@ -17,7 +17,7 @@ int main() {
     GameSettings gameSettings;
     gameSettings.m_maxPips = 6;
     gameSettings.m_startingHandSize = 9;
-    gameSettings.m_numberOfPlayers = 1;
+    gameSettings.m_numberOfPlayers = 2;
 
     GameAdmin gameAdmin(&std::cout);
     gameAdmin.runGame(gameSettings, [&gameSettings] (
@@ -27,9 +27,8 @@ int main() {
     ) -> std::vector<std::unique_ptr<PlayerAI>> {
       assert(players.size() == enemyPlayerLists.size());
       std::vector<std::unique_ptr<PlayerAI>> playerAis;
-      for (int32 i = 0; i < (int32) players.size(); i++) {
-        playerAis.emplace_back(std::make_unique<HumanPlayerAI>(players[i], enemyPlayerLists[i], board, gameSettings, &std::cout));
-      }
+      playerAis.emplace_back(std::make_unique<HumanPlayerAI>(players[0], enemyPlayerLists[0], board, gameSettings, &std::cout));
+      playerAis.emplace_back(std::make_unique<RandomPlayerAI>(players[1], enemyPlayerLists[1], board, gameSettings, nullptr));
       return playerAis;
     });
   }

@@ -101,55 +101,65 @@ void GameAdmin::runGame(
     while (!roundOver) {
       Player& currPlayer = players[playerTurn];
       Train& currPlayerTrain = board.m_playerTrains[currPlayer.m_id];
-      auto drawOrPass = [&] () {
-        currPlayerTrain.m_isPublic = true;
-        if (board.poolSize() > 0) {
-          Tile tile = board.dealTile();
-          currPlayer.m_hand.push_back(tile);
-          for (auto& ai : playerAis) {
-            ai->notifyTileDraw(currPlayer.m_id);
+      auto playTurn = [&] (const std::set<int32>& playablePips, const std::set<id>& playableTrains, const std::string& illegalPlayMessage) {
+        if (game.playerHasPlay(currPlayer, playablePips)) {
+          game.playTile(currPlayer, playableTrains, illegalPlayMessage, &activeDoubles, &activeDoublesTrainId, &roundOver);
+          if (!activeDoubles) {
+            lastActionTurn = playerTurn;
+            playerTurn = (playerTurn + 1) % players.size();
           }
-          lastActionTurn = playerTurn;
-          playerTurn = (playerTurn + 1) % players.size();
-        } else if (lastActionTurn == playerTurn) {
-          roundOver = true;
         } else {
-          playerTurn = (playerTurn + 1) % players.size();
-          for (auto& ai : playerAis) {
-            ai->notifyPassTurn(currPlayer.m_id);
+          currPlayerTrain.m_isPublic = true;
+          if (board.poolSize() > 0) {
+            Tile tile = board.dealTile();
+            currPlayer.m_hand.push_back(tile);
+            for (auto& ai : playerAis) {
+              ai->notifyTileDraw(currPlayer.m_id);
+            }
+            if (playablePips.count(tile.m_highPips) == 1 || playablePips.count(tile.m_lowPips) == 1) {
+              currPlayerTrain.m_isPublic = false;
+              game.playTile(currPlayer, playableTrains, illegalPlayMessage, &activeDoubles, &activeDoublesTrainId, &roundOver);
+              if (!activeDoubles) {
+                lastActionTurn = playerTurn;
+                playerTurn = (playerTurn + 1) % players.size();
+              }
+            } else {
+              lastActionTurn = playerTurn;
+              playerTurn = (playerTurn + 1) % players.size();
+            }
+          } else if (lastActionTurn == playerTurn) {
+            for (auto& ai : playerAis) {
+              ai->notifyPassTurn(currPlayer.m_id);
+            }
+            roundOver = true;
+          } else {
+            playerTurn = (playerTurn + 1) % players.size();
+            for (auto& ai : playerAis) {
+              ai->notifyPassTurn(currPlayer.m_id);
+            }
           }
         }
       };
 
+      std::set<int32> playablePips;
+      std::set<id> playableTrains;
+      std::string illegalPlayMessage;
       if (activeDoubles) {
         Train& doublesTrain = board.getTrainById(activeDoublesTrainId);
-        int32 pips = doublesTrain.m_tiles.back().m_tile.m_highPips;
-        if (game.playerHasPlay(currPlayer, {pips})) {
-          game.playTile(currPlayer, {activeDoublesTrainId}, "You must play a valid tile from your hand onto the active doubles.", &activeDoubles, &activeDoublesTrainId, &roundOver);
-          lastActionTurn = playerTurn;
-          if (!activeDoubles) {
-            playerTurn = (playerTurn + 1) % players.size();
-          }
-        } else {
-          drawOrPass();
-        }
+        playablePips = {doublesTrain.m_tiles.back().m_tile.m_highPips};
+        playableTrains = {activeDoublesTrainId};
+        illegalPlayMessage = "You must play a valid tile from your hand onto the active doubles.";
+        playTurn(playablePips, playableTrains, illegalPlayMessage);
       } else if (currPlayerTrain.m_tiles.size() > 0) {
-        std::set<int32> playablePips = game.standardPlayablePips(currPlayer);
-        if (game.playerHasPlay(currPlayer, playablePips)) {
-          game.playTile(currPlayer, game.standardPlayableTrains(currPlayer), "You must make a valid play.", &activeDoubles, &activeDoublesTrainId, &roundOver);
-          lastActionTurn = playerTurn;
-          if (!activeDoubles) {
-            playerTurn = (playerTurn + 1) % players.size();
-          }
-        } else {
-          drawOrPass();
-        }
+        playablePips = game.standardPlayablePips(currPlayer);
+        playableTrains = game.standardPlayableTrains(currPlayer);
+        illegalPlayMessage = "You must make a valid play.";
+        playTurn(playablePips, playableTrains, illegalPlayMessage);
       } else {
-        if (game.playerHasPlay(currPlayer, {board.m_centerTile->m_highPips})) {
-          game.playTile(currPlayer, {currPlayerTrain.m_id}, "You must play onto your own train first.", &activeDoubles, &activeDoublesTrainId, &roundOver);
-        } else {
-          drawOrPass();
-        }
+        playablePips = {board.m_centerTile->m_highPips};
+        playableTrains = {currPlayerTrain.m_id};
+        illegalPlayMessage = "You must play onto your own train first.";
+        playTurn(playablePips, playableTrains, illegalPlayMessage);
       }
     }
 
@@ -157,6 +167,12 @@ void GameAdmin::runGame(
       for (auto& tile : player.m_hand) {
         player.m_score += tile.m_highPips;
         player.m_score += tile.m_lowPips;
+      }
+    }
+
+    for (auto& player : players) {
+      if (player.m_hand.size() == 0) {
+        player.m_roundsWon++;
       }
     }
 
