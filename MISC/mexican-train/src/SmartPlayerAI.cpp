@@ -35,45 +35,87 @@ TilePlay SmartPlayerAI::playTile() {
 
   if (m_reevaluatePlays) {
     // TODO: support repeated dominos
-    vector<set<int32>> edgeLists(m_gameSettings.m_maxPips + 1);
+    // TODO: always play double domino if possible
+    vector<set<int32>> edgeSets(m_gameSettings.m_maxPips + 1);
     for (auto& tile : m_player.m_hand) {
-      edgeLists[tile.m_highPips].insert(tile.m_lowPips);
-      edgeLists[tile.m_lowPips].insert(tile.m_highPips);
+      edgeSets[tile.m_highPips].insert(tile.m_lowPips);
+      edgeSets[tile.m_lowPips].insert(tile.m_highPips);
     }
 
-
     function<void(int32, int32*, vector<pair<int32, int32>>*)> findBest;
-    findBest = [&] (int32 seed, int32* retPoints, vector<pair<int32, int32>>* retTrain) {
-      set<int32> starts = edgeLists[seed];
+    findBest = [&] (int32 startingPips, int32* retPoints, vector<pair<int32, int32>>* retTrain) {
+      set<int32> plays = edgeSets[startingPips];
       int32 bestPoints = 0;
       vector<pair<int32, int32>> bestTrain;
-      for (int32 start : starts) {
-        edgeLists[seed].erase(start);
-        edgeLists[start].erase(seed);
+      for (int32 endingPips : plays) {
+        edgeSets[startingPips].erase(endingPips);
+        edgeSets[endingPips].erase(startingPips);
         int32 points;
         vector<pair<int32, int32>> train;
-        findBest(start, &points, &train);
-        if (points + seed + start >= bestPoints) {
-          bestPoints = points + seed + start;
+        findBest(endingPips, &points, &train);
+        if (points + startingPips + endingPips >= bestPoints) {
+          bestPoints = points + startingPips + endingPips;
           bestTrain = move(train);
-          bestTrain.emplace_back(start, seed);
+          bestTrain.emplace_back(endingPips, startingPips);
         }
-        edgeLists[seed].insert(start);
-        edgeLists[start].insert(seed);
+        edgeSets[startingPips].insert(endingPips);
+        edgeSets[endingPips].insert(startingPips);
       }
       *retPoints = bestPoints;
       *retTrain = move(bestTrain);
     };
 
-    int32 seed = m_board.m_centerTile->m_highPips;
+    auto findBestRandom = [&] (int32 startingPips, int32* retPoints, vector<pair<int32, int32>>* retTrain) {
+      int32 bestPoints = 0;
+      vector<pair<int32, int32>> bestTrain;
+      for (int32 trial = 0; trial < 1000; trial++) {
+        int32 currPips = startingPips;
+
+        int32 points = 0;
+        vector<pair<int32, int32>> train;
+        while (edgeSets[currPips].size() > 0) {
+          int32 randomIndex = RNG::get().m_mt() % edgeSets[currPips].size();
+          auto it = edgeSets[currPips].begin();
+          for (int32 i = 0; i < randomIndex; i++) {
+            it++;
+          }
+          int32 nextPips = *it;
+          edgeSets[currPips].erase(it);
+          edgeSets[nextPips].erase(currPips);
+          points += currPips + nextPips;
+          train.emplace_back(nextPips, currPips);
+          currPips = nextPips;
+        }
+
+        for (auto& tile : train) {
+          edgeSets[tile.first].insert(tile.second);
+          edgeSets[tile.second].insert(tile.first);
+        }
+
+        if (points >= bestPoints) {
+          bestPoints = points;
+          bestTrain = move(train);
+        }
+      }
+
+      *retPoints = bestPoints;
+      *retTrain = move(bestTrain);
+      reverse(retTrain->begin(), retTrain->end());
+    };
+
+    int32 endPips = m_board.m_centerTile->m_highPips;
     if (m_playerTrain.m_tiles.size() > 0) {
       const TrainTile& endTile = m_playerTrain.m_tiles.back();
-      seed = endTile.m_isFlipped ? endTile.m_tile.m_highPips : endTile.m_tile.m_lowPips;
+      endPips = endTile.m_isFlipped ? endTile.m_tile.m_highPips : endTile.m_tile.m_lowPips;
     }
 
     int32 bestPoints;
     vector<pair<int32, int32>> bestTrain;
-    findBest(seed, &bestPoints, &bestTrain);
+    if (m_player.m_hand.size() < 20) {
+      findBest(endPips, &bestPoints, &bestTrain);
+    } else {
+      findBestRandom(endPips, &bestPoints, &bestTrain);
+    }
 
     m_plannedTrain.clear();
     for (auto& tile : bestTrain) {
@@ -94,8 +136,8 @@ TilePlay SmartPlayerAI::playTile() {
     m_reevaluatePlays = false;
   }
 
+  m_successfulPlay = false;
   if (m_plannedTrain.size() > 0) {
-    m_successfulPlay = false;
     TilePlay tilePlay(m_plannedTrain.back(), m_playerTrain.m_id);
     m_plannedTrain.pop_back();
     return tilePlay;

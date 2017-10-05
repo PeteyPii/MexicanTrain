@@ -14,7 +14,7 @@ INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 CXX := g++
-CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -std=c++1z -g -Wall
+CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -std=c++1z -Wall -O2
 
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS)

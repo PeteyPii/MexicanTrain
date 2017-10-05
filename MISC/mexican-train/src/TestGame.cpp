@@ -105,7 +105,8 @@ int main() {
           } else if (i % 3 == 1) {
             playerAis.emplace_back(std::make_unique<GreedyPlayerAI>(players[i], enemyPlayerLists[i], board, gameSettings, nullptr));
           } else {
-            playerAis.emplace_back(std::make_unique<SmartPlayerAI>(players[i], enemyPlayerLists[i], board, gameSettings, &std::cout));
+            // playerAis.emplace_back(std::make_unique<SmartPlayerAI>(players[i], enemyPlayerLists[i], board, gameSettings, &std::cout));
+            playerAis.emplace_back(std::make_unique<SmartPlayerAI>(players[i], enemyPlayerLists[i], board, gameSettings, nullptr));
           }
         }
         return playerAis;
