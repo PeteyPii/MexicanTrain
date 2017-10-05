@@ -91,7 +91,7 @@ int main() {
     gameSettings.m_numberOfPlayers = 3;
 
     GameAdmin gameAdmin(nullptr);
-    for (int32 iters = 0; iters < 200; iters++) {
+    for (int32 iters = 0; iters < 10000; iters++) {
       gameAdmin.runGame(gameSettings, [&gameSettings] (
         const std::vector<Player>& players,
         const std::vector<std::vector<EnemyPlayer>>& enemyPlayerLists,
@@ -105,7 +105,6 @@ int main() {
           } else if (i % 3 == 1) {
             playerAis.emplace_back(std::make_unique<GreedyPlayerAI>(players[i], enemyPlayerLists[i], board, gameSettings, nullptr));
           } else {
-            // playerAis.emplace_back(std::make_unique<SmartPlayerAI>(players[i], enemyPlayerLists[i], board, gameSettings, &std::cout));
             playerAis.emplace_back(std::make_unique<SmartPlayerAI>(players[i], enemyPlayerLists[i], board, gameSettings, nullptr));
           }
         }

@@ -45,8 +45,8 @@ TilePlay GreedyPlayerAI::playTile() {
   return tilePlay;
 }
 
-void GreedyPlayerAI::notifyTilePlay(id playerId, id trainId, id tileId) {
-  LoggingPlayerAI::notifyTilePlay(playerId, trainId, tileId);
+void GreedyPlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
+  LoggingPlayerAI::notifyTilePlay(playerId, placeId, tileId);
   m_reevaluatePlays = true;
 }
 

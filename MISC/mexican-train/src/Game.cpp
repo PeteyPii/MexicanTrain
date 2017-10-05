@@ -18,7 +18,7 @@ int32 Game::playCenterTile(std::vector<int32>* incompleteRounds) {
           if (*incompleteRoundIt == tileIt->m_highPips && *incompleteRoundIt == tileIt->m_lowPips) {
             while (true) {
               TilePlay tilePlay = playerIt->m_ai->playTile();
-              auto playedTileIt = find_if(playerIt->m_hand.begin(), playerIt->m_hand.end(), [&] (const Tile& tile) { return tile.m_id == tilePlay.m_tileId; });
+              auto playedTileIt = find_if(playerIt->m_hand.begin(), playerIt->m_hand.end(), [&] (const Tile& tile) -> bool { return tile.m_id == tilePlay.m_tileId; });
               bool validPlay = playedTileIt != playerIt->m_hand.end() &&
                 (playedTileIt->m_highPips == *incompleteRoundIt && playedTileIt->m_lowPips == *incompleteRoundIt) &&
                 tilePlay.m_placeId == m_board.m_centerPlaceId;
@@ -112,7 +112,7 @@ bool Game::playerHasPlay(Player& player, std::set<int32> playablePips) {
 void Game::playTile(Player& player, std::set<id> validTrainIds, const std::string& illegalPlayMessage, bool* activeDoubles, id* activeDoublesTrainId, bool* roundOver) {
   while (true) {
     TilePlay tilePlay = player.m_ai->playTile();
-    auto tileIt = find_if(player.m_hand.begin(), player.m_hand.end(), [&] (const Tile& tile) { return tile.m_id == tilePlay.m_tileId; });
+    auto tileIt = find_if(player.m_hand.begin(), player.m_hand.end(), [&] (const Tile& tile) -> bool { return tile.m_id == tilePlay.m_tileId; });
     bool validPlay = tileIt != player.m_hand.end() &&
       validTrainIds.count(tilePlay.m_placeId) > 0;
     if (validPlay) {

@@ -22,7 +22,7 @@ public:
   virtual void notifyGameResult(int32 placeFinished) override;
   virtual void notifyRoundStart() override;
   virtual void notifyRoundEnd() override;
-  virtual void notifyTilePlay(id playerId, id trainId, id tileId) override;
+  virtual void notifyTilePlay(id playerId, id placeId, id tileId) override;
   virtual void notifyTileDraw(id playerId) override;
   virtual void notifyPassTurn(id playerId) override;
 

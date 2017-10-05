@@ -28,8 +28,8 @@ TilePlay HumanPlayerAI::playTile() {
   return RandomPlayerAI::playTile();
 }
 
-void HumanPlayerAI::notifyTilePlay(id playerId, id trainId, id tileId) {
-  RandomPlayerAI::notifyTilePlay(playerId, trainId, tileId);
+void HumanPlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
+  RandomPlayerAI::notifyTilePlay(playerId, placeId, tileId);
   m_newPlay = true;
 }
 

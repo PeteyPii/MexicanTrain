@@ -10,7 +10,7 @@ RNG& RNG::get() {
 }
 
 RNG::RNG() {
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  unsigned long long seed = std::chrono::system_clock::now().time_since_epoch().count();
   m_mt.seed(seed);
   std::cout << "RNG seed: " << seed << ".\n";
 }
