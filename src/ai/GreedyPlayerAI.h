@@ -1,28 +1,29 @@
 #pragma once
 
-#include <istream>
 #include <ostream>
 #include <string>
 #include <vector>
 #include "Common.h"
 #include "EnemyPlayer.h"
-#include "RandomPlayerAI.h"
+#include "ai/LoggingPlayerAI.h"
 
 class Board;
 class Player;
 
 
-class HumanPlayerAI : public RandomPlayerAI {
+class GreedyPlayerAI : public LoggingPlayerAI {
 public:
-  HumanPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::istream& in, std::ostream* out = nullptr);
-  virtual ~HumanPlayerAI();
+  GreedyPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out = nullptr);
+  virtual ~GreedyPlayerAI();
   virtual TilePlay playTile() override;
   virtual void notifyTilePlay(id playerId, id placeId, id tileId) override;
   virtual void notifyGameResult(int32 placeFinished) override;
   virtual void message(const std::string& msg) override;
 
 private:
-  bool m_successfulPlay = true;
-  bool m_makeRandomPlay = false;
-  std::istream& m_in;
+  std::vector<id> m_allPlaceIds;
+  std::vector<id> m_sortedTileIds;
+  uint32 m_tileIndex = -1;
+  uint32 m_placeIndex = -1;
+  bool m_reevaluatePlays = true;
 };

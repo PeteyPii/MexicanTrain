@@ -4,10 +4,10 @@
 #include <vector>
 #include "GameAdmin.h"
 #include "GameSettings.h"
-#include "GreedyPlayerAI.h"
-#include "HumanPlayerAI.h"
-#include "RandomPlayerAI.h"
-#include "SmartPlayerAI.h"
+#include "ai/GreedyPlayerAI.h"
+#include "ai/HumanPlayerAI.h"
+#include "ai/RandomPlayerAI.h"
+#include "ai/SmartPlayerAI.h"
 #include "StatTracker.h"
 
 using namespace std;

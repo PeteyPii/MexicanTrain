@@ -6,7 +6,7 @@
 #include <vector>
 #include "Common.h"
 #include "EnemyPlayer.h"
-#include "RandomPlayerAI.h"
+#include "ai/RandomPlayerAI.h"
 
 class Board;
 class Player;
