@@ -2,7 +2,6 @@
 
 #include "Player.h"
 
-
 EnemyPlayer::EnemyPlayer(const Player& player) : m_player(player) {
 }
 

@@ -2,7 +2,6 @@
 
 #include "Common.h"
 
-
 class IdentityGenerator {
 public:
   static IdentityGenerator& get();

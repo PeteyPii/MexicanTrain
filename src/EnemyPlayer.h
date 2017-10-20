@@ -1,10 +1,9 @@
 #pragma once
 
-#include <ostream>
 #include "Common.h"
+#include <ostream>
 
 class Player;
-
 
 class EnemyPlayer {
 public:

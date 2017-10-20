@@ -1,19 +1,22 @@
 #pragma once
 
-#include <ostream>
-#include <string>
-#include <vector>
 #include "Common.h"
 #include "EnemyPlayer.h"
 #include "ai/LoggingPlayerAI.h"
+#include <ostream>
+#include <string>
+#include <vector>
 
 class Board;
 class Player;
 
-
 class GreedyPlayerAI : public LoggingPlayerAI {
 public:
-  GreedyPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out = nullptr);
+  GreedyPlayerAI(
+      const Player& player,
+      const std::vector<EnemyPlayer>& enemyPlayers,
+      const Board& board,
+      std::ostream* out = nullptr);
   virtual ~GreedyPlayerAI();
   virtual TilePlay playTile() override;
   virtual void notifyTilePlay(id playerId, id placeId, id tileId) override;

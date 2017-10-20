@@ -3,7 +3,6 @@
 #include <chrono>
 #include <iostream>
 
-
 RNG& RNG::get() {
   static RNG instance;
   return instance;

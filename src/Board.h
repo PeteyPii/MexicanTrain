@@ -1,15 +1,14 @@
 #pragma once
 
-#include <map>
-#include <ostream>
-#include <experimental/optional>
-#include <vector>
 #include "Common.h"
 #include "GameSettings.h"
 #include "Player.h"
 #include "Tile.h"
 #include "Train.h"
-
+#include <experimental/optional>
+#include <map>
+#include <ostream>
+#include <vector>
 
 class Board {
 public:

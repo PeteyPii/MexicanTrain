@@ -1,13 +1,10 @@
 #include "Tile.h"
 
-#include <cassert>
 #include "IdentityGenerator.h"
-
+#include <cassert>
 
 Tile::Tile(int32 highPip, int32 lowPip)
-  : m_id(IdentityGenerator::get().nextId()),
-  m_highPips(highPip),
-  m_lowPips(lowPip) {
+    : m_id(IdentityGenerator::get().nextId()), m_highPips(highPip), m_lowPips(lowPip) {
   assert(m_highPips >= m_lowPips);
 }
 

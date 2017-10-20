@@ -2,7 +2,6 @@
 
 #include <random>
 
-
 class RNG {
 public:
   static RNG& get();

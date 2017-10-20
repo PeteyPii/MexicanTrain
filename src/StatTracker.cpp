@@ -1,6 +1,5 @@
 #include "StatTracker.h"
 
-
 StatTracker& StatTracker::get() {
   static StatTracker instance;
   return instance;
@@ -23,7 +22,8 @@ std::ostream& operator<<(std::ostream& out, StatTracker& statTracker) {
         playerCountKv.second.m_finishPlaceCounts[i] += 0;
       }
       for (auto& placeCountsKv : playerCountKv.second.m_finishPlaceCounts) {
-        out << "    Finished (" << placeCountsKv.first << "/" << playerCountKv.first << ") " << placeCountsKv.second << " time(s).\n";
+        out << "    Finished (" << placeCountsKv.first << "/" << playerCountKv.first << ") " << placeCountsKv.second
+            << " time(s).\n";
       }
     }
   }

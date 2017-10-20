@@ -1,6 +1,5 @@
 #include "IdentityGenerator.h"
 
-
 IdentityGenerator& IdentityGenerator::get() {
   static IdentityGenerator instance;
   return instance;

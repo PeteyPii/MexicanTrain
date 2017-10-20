@@ -1,17 +1,17 @@
 #pragma once
 
-#include <string>
-#include <vector>
 #include "Common.h"
 #include "EnemyPlayer.h"
 #include "GameSettings.h"
+#include <string>
+#include <vector>
 
 class Board;
 class Player;
 
-
 struct TilePlay {
-  TilePlay(id tileId, id placeId) : m_tileId(tileId), m_placeId(placeId) {}
+  TilePlay(id tileId, id placeId) : m_tileId(tileId), m_placeId(placeId) {
+  }
   id m_tileId;
   id m_placeId;
 };

@@ -1,13 +1,12 @@
 #pragma once
 
-#include <ostream>
-#include <vector>
 #include "Common.h"
 #include "EnemyPlayer.h"
 #include "Tile.h"
+#include <ostream>
+#include <vector>
 
 class PlayerAI;
-
 
 class Player {
 public:

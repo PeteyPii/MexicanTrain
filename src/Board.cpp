@@ -1,12 +1,12 @@
 #include "Board.h"
 
-#include <algorithm>
-#include <cassert>
 #include "IdentityGenerator.h"
 #include "RNG.h"
+#include <algorithm>
+#include <cassert>
 
-
-Board::Board(const std::vector<Player>& players, const GameSettings& gameSettings) : m_centerPlaceId(IdentityGenerator::get().nextId()), m_gameSettings(gameSettings) {
+Board::Board(const std::vector<Player>& players, const GameSettings& gameSettings)
+    : m_centerPlaceId(IdentityGenerator::get().nextId()), m_gameSettings(gameSettings) {
   for (const auto& player : players) {
     m_playerTrains.insert(std::make_pair(player.m_id, Train()));
   }

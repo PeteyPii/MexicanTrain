@@ -1,21 +1,24 @@
 #pragma once
 
+#include "Common.h"
+#include "EnemyPlayer.h"
+#include "ai/RandomPlayerAI.h"
 #include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
-#include "Common.h"
-#include "EnemyPlayer.h"
-#include "ai/RandomPlayerAI.h"
 
 class Board;
 class Player;
 class Train;
 
-
 class SmartPlayerAI : public RandomPlayerAI {
 public:
-  SmartPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out = nullptr);
+  SmartPlayerAI(
+      const Player& player,
+      const std::vector<EnemyPlayer>& enemyPlayers,
+      const Board& board,
+      std::ostream* out = nullptr);
   virtual ~SmartPlayerAI();
   virtual TilePlay playTile() override;
   virtual void notifyRoundStart();

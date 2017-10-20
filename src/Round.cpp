@@ -1,27 +1,29 @@
 #include "Round.h"
 
-#include <algorithm>
 #include "PlayerAI.h"
 #include "RNG.h"
+#include <algorithm>
 
 Round::Round(GameSettings gameSettings, Board& board, std::vector<Player>& players)
-  : m_gameSettings(gameSettings),
-  m_board(board),
-  m_players(players) {
+    : m_gameSettings(gameSettings), m_board(board), m_players(players) {
 }
 
 int32 Round::playCenterTile(std::vector<int32>* incompleteRounds) {
   while (true) {
-    for (auto incompleteRoundIt = incompleteRounds->begin(); incompleteRoundIt != incompleteRounds->end(); incompleteRoundIt++) {
+    for (auto incompleteRoundIt = incompleteRounds->begin(); incompleteRoundIt != incompleteRounds->end();
+         incompleteRoundIt++) {
       for (auto playerIt = m_players.begin(); playerIt != m_players.end(); playerIt++) {
         for (auto tileIt = playerIt->m_hand.begin(); tileIt != playerIt->m_hand.end(); tileIt++) {
           if (*incompleteRoundIt == tileIt->m_highPips && *incompleteRoundIt == tileIt->m_lowPips) {
             while (true) {
               TilePlay tilePlay = playerIt->m_ai->playTile();
-              auto playedTileIt = find_if(playerIt->m_hand.begin(), playerIt->m_hand.end(), [&] (const Tile& tile) -> bool { return tile.m_id == tilePlay.m_tileId; });
+              auto playedTileIt =
+                  find_if(playerIt->m_hand.begin(), playerIt->m_hand.end(), [&](const Tile& tile) -> bool {
+                    return tile.m_id == tilePlay.m_tileId;
+                  });
               bool validPlay = playedTileIt != playerIt->m_hand.end() &&
-                (playedTileIt->m_highPips == *incompleteRoundIt && playedTileIt->m_lowPips == *incompleteRoundIt) &&
-                tilePlay.m_placeId == m_board.m_centerPlaceId;
+                  (playedTileIt->m_highPips == *incompleteRoundIt && playedTileIt->m_lowPips == *incompleteRoundIt) &&
+                  tilePlay.m_placeId == m_board.m_centerPlaceId;
               if (validPlay) {
                 m_board.m_centerTile = *playedTileIt;
                 playerIt->m_hand.erase(playedTileIt);
@@ -31,7 +33,8 @@ int32 Round::playCenterTile(std::vector<int32>* incompleteRounds) {
                 }
                 break;
               }
-              playerIt->m_ai->message("You must play the highest double that hasn't been initiated with this game.");
+              playerIt->m_ai->message("You must play the highest double that "
+                                      "hasn't been initiated with this game.");
             }
             return playerIt - m_players.begin();
           }
@@ -49,7 +52,7 @@ int32 Round::playCenterTile(std::vector<int32>* incompleteRounds) {
       }
     } else {
       std::vector<int32> randomPlayerIndices;
-      for (int i = 0; i < (int32) m_players.size(); i++) {
+      for (int i = 0; i < (int32)m_players.size(); i++) {
         randomPlayerIndices.push_back(i);
       }
       std::shuffle(randomPlayerIndices.begin(), randomPlayerIndices.end(), RNG::get().m_mt);
@@ -109,19 +112,25 @@ bool Round::playerHasPlay(Player& player, std::set<int32> playablePips) {
   return false;
 }
 
-void Round::playTile(Player& player, std::set<id> validTrainIds, const std::string& illegalPlayMessage, bool* activeDoubles, id* activeDoublesTrainId, bool* roundOver) {
+void Round::playTile(
+    Player& player,
+    std::set<id> validTrainIds,
+    const std::string& illegalPlayMessage,
+    bool* activeDoubles,
+    id* activeDoublesTrainId,
+    bool* roundOver) {
   while (true) {
     TilePlay tilePlay = player.m_ai->playTile();
-    auto tileIt = find_if(player.m_hand.begin(), player.m_hand.end(), [&] (const Tile& tile) -> bool { return tile.m_id == tilePlay.m_tileId; });
-    bool validPlay = tileIt != player.m_hand.end() &&
-      validTrainIds.count(tilePlay.m_placeId) > 0;
+    auto tileIt = find_if(player.m_hand.begin(), player.m_hand.end(), [&](const Tile& tile) -> bool {
+      return tile.m_id == tilePlay.m_tileId;
+    });
+    bool validPlay = tileIt != player.m_hand.end() && validTrainIds.count(tilePlay.m_placeId) > 0;
     if (validPlay) {
       Train& targetTrain = m_board.getTrainById(tilePlay.m_placeId);
       int32 endPips = m_board.m_centerTile->m_highPips;
       if (targetTrain.m_tiles.size() > 0) {
-        endPips = targetTrain.m_tiles.back().m_isFlipped ?
-          targetTrain.m_tiles.back().m_tile.m_highPips :
-          targetTrain.m_tiles.back().m_tile.m_lowPips;
+        endPips = targetTrain.m_tiles.back().m_isFlipped ? targetTrain.m_tiles.back().m_tile.m_highPips
+                                                         : targetTrain.m_tiles.back().m_tile.m_lowPips;
       }
       if (tileIt->m_highPips == endPips || tileIt->m_lowPips == endPips) {
         Tile playedTile = *tileIt;
@@ -145,13 +154,15 @@ void Round::playTile(Player& player, std::set<id> validTrainIds, const std::stri
           }
           for (auto& kv : m_board.m_playerTrains) {
             for (auto& trainTile : kv.second.m_tiles) {
-              if (trainTile.m_tile.m_highPips == playedTile.m_highPips || trainTile.m_tile.m_lowPips == playedTile.m_highPips) {
+              if (trainTile.m_tile.m_highPips == playedTile.m_highPips ||
+                  trainTile.m_tile.m_lowPips == playedTile.m_highPips) {
                 countPlayed += 1;
               }
             }
           }
           for (auto& trainTile : m_board.m_publicTrain.m_tiles) {
-            if (trainTile.m_tile.m_highPips == playedTile.m_highPips || trainTile.m_tile.m_lowPips == playedTile.m_highPips) {
+            if (trainTile.m_tile.m_highPips == playedTile.m_highPips ||
+                trainTile.m_tile.m_lowPips == playedTile.m_highPips) {
               countPlayed += 1;
             }
           }

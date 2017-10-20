@@ -1,14 +1,13 @@
 #include "LoggingPlayerAI.h"
 
-#include <sstream>
-#include <string>
 #include "Board.h"
 #include "Player.h"
+#include <sstream>
+#include <string>
 
-
-LoggingPlayerAI::LoggingPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out)
-  : PlayerAI(player, enemyPlayers, board),
-  m_out(out) {
+LoggingPlayerAI::LoggingPlayerAI(
+    const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out)
+    : PlayerAI(player, enemyPlayers, board), m_out(out) {
 }
 
 LoggingPlayerAI::~LoggingPlayerAI() {
@@ -66,7 +65,8 @@ void LoggingPlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
     } else {
       tileStr = toString(m_board.getTrainById(placeId).m_tiles.back().m_tile);
     }
-    *m_out << messagePrefix() << "{" << playerId << "} played {" << tileId << "}=" << tileStr << " onto {" << placeId << "}.\n";
+    *m_out << messagePrefix() << "{" << playerId << "} played {" << tileId << "}=" << tileStr << " onto {" << placeId
+           << "}.\n";
   }
 }
 

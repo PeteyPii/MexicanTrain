@@ -4,6 +4,7 @@ BUILD_DIR ?= ./build
 SRC_DIRS ?= ./src
 TARGETS_DIR ?= ./src/targets
 
+HEADERS := $(shell find $(SRC_DIRS) -name '*.h')
 SRCS := $(shell find $(SRC_DIRS) -name '*.cpp' -not -path '$(TARGETS_DIR)/**')
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
@@ -28,13 +29,16 @@ $(BUILD_DIR)/%.cpp.o: %.cpp
 	$(MKDIR_P) $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-.PHONY: clean
+.PHONY: clean test format
 
 clean:
 	$(RM) -r $(BUILD_DIR)
 
 test: $(BUILD_DIR)/test_ais
 	$(BUILD_DIR)/test_ais
+
+format:
+	clang-format -i -style=file $(SRCS) $(TARGET_SRCS) $(HEADERS)
 
 -include $(DEPS)
 

@@ -1,11 +1,10 @@
 #pragma once
 
-#include <ostream>
+#include "Common.h"
 #include <map>
+#include <ostream>
 #include <string>
 #include <vector>
-#include "Common.h"
-
 
 struct Stats {
   std::map<int32, int32> m_finishPlaceCounts;

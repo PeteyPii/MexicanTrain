@@ -1,8 +1,7 @@
 #pragma once
 
-#include <ostream>
 #include "Common.h"
-
+#include <ostream>
 
 class Tile {
 public:

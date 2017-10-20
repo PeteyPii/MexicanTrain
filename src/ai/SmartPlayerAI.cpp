@@ -1,21 +1,22 @@
 #include "SmartPlayerAI.h"
 
-#include <algorithm>
-#include <cassert>
-#include <functional>
-#include <set>
-#include <map>
-#include <utility>
 #include "Board.h"
 #include "RNG.h"
 #include "StatTracker.h"
 #include "Train.h"
+#include <algorithm>
+#include <cassert>
+#include <functional>
+#include <map>
+#include <set>
+#include <utility>
 
 using namespace std;
 
-
-SmartPlayerAI::SmartPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out)
-  : RandomPlayerAI(player, enemyPlayers, board, out), m_playerTrain(m_board.m_playerTrains.find(m_player.m_id)->second) {
+SmartPlayerAI::SmartPlayerAI(
+    const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out)
+    : RandomPlayerAI(player, enemyPlayers, board, out),
+      m_playerTrain(m_board.m_playerTrains.find(m_player.m_id)->second) {
   m_otherTrains.push_back(&m_board.m_publicTrain);
   for (auto& kv : m_board.m_playerTrains) {
     if (kv.first != m_player.m_id) {
@@ -46,7 +47,7 @@ TilePlay SmartPlayerAI::playTile() {
     }
 
     function<void(int32, int32*, vector<pair<int32, int32>>*)> findBest;
-    findBest = [&] (int32 startingPips, int32* retPoints, vector<pair<int32, int32>>* retTrain) {
+    findBest = [&](int32 startingPips, int32* retPoints, vector<pair<int32, int32>>* retTrain) {
       int32 bestPoints = 0;
       vector<pair<int32, int32>> bestTrain;
       auto it = edgeSets[startingPips].find(startingPips);
@@ -80,7 +81,7 @@ TilePlay SmartPlayerAI::playTile() {
       *retTrain = move(bestTrain);
     };
 
-    auto findBestRandom = [&] (int32 startingPips, int32* retPoints, vector<pair<int32, int32>>* retTrain) {
+    auto findBestRandom = [&](int32 startingPips, int32* retPoints, vector<pair<int32, int32>>* retTrain) {
       int32 bestPoints = 0;
       vector<pair<int32, int32>> bestTrain;
       for (int32 trial = 0; trial < 1000; trial++) {
@@ -165,7 +166,7 @@ TilePlay SmartPlayerAI::playTile() {
     for (auto& kv : spareTiles) {
       m_spareTiles.push_back(kv.second->m_id);
     }
-    sort(m_spareTiles.begin(), m_spareTiles.end(), [&] (id left, id right) -> bool {
+    sort(m_spareTiles.begin(), m_spareTiles.end(), [&](id left, id right) -> bool {
       const Tile& leftTile = *spareTiles[left];
       const Tile& rightTile = *spareTiles[right];
       return leftTile.m_highPips + leftTile.m_lowPips > rightTile.m_highPips + rightTile.m_lowPips;
@@ -184,7 +185,8 @@ TilePlay SmartPlayerAI::playTile() {
   }
   while (m_spareTileIndex < m_spareTiles.size()) {
     id tileId = m_spareTiles[m_spareTileIndex];
-    auto tileIt = find_if(m_player.m_hand.begin(), m_player.m_hand.end(), [&] (const Tile& tile) -> bool { return tileId == tile.m_id; });
+    auto tileIt = find_if(
+        m_player.m_hand.begin(), m_player.m_hand.end(), [&](const Tile& tile) -> bool { return tileId == tile.m_id; });
     assert(tileIt != m_player.m_hand.end());
     while (m_spareTrainIndex < m_otherTrains.size()) {
       int32 endPips = m_board.m_centerTile->m_highPips;
@@ -265,4 +267,3 @@ void SmartPlayerAI::notifyGameResult(int32 placeFinished) {
 
 void SmartPlayerAI::message(const std::string& msg) {
 }
-

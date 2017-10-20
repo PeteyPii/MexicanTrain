@@ -1,28 +1,23 @@
 #include "GameAdmin.h"
 
-#include <algorithm>
-#include <cassert>
-#include <iostream>
-#include <set>
 #include "Board.h"
 #include "PlayerAI.h"
 #include "RNG.h"
 #include "Round.h"
+#include <algorithm>
+#include <cassert>
+#include <iostream>
+#include <set>
 
 using namespace std;
-
 
 GameAdmin::GameAdmin(std::ostream* out) : m_out(out) {
 }
 
 void GameAdmin::runGame(
-  const GameSettings& gameSettings,
-  std::function<std::vector<std::unique_ptr<PlayerAI>>(
-    const std::vector<Player>&,
-    const std::vector<std::vector<EnemyPlayer>>&,
-    const Board&
-  )> aiCreator
-) {
+    const GameSettings& gameSettings,
+    std::function<std::vector<std::unique_ptr<PlayerAI>>(
+        const std::vector<Player>&, const std::vector<std::vector<EnemyPlayer>>&, const Board&)> aiCreator) {
   if (m_out) {
     *m_out << "Number of players: " << gameSettings.m_numberOfPlayers << endl;
     *m_out << "Max domino pip count: " << gameSettings.m_maxPips << endl;
@@ -44,16 +39,16 @@ void GameAdmin::runGame(
 
   std::vector<Player> players(gameSettings.m_numberOfPlayers);
   std::vector<std::vector<EnemyPlayer>> enemyPlayerLists(gameSettings.m_numberOfPlayers);
-  for (int32 i = 0; i < (int32) players.size(); i++) {
-    for (int32 offset = 1; offset < (int32) players.size(); offset++) {
+  for (int32 i = 0; i < (int32)players.size(); i++) {
+    for (int32 offset = 1; offset < (int32)players.size(); offset++) {
       enemyPlayerLists[i].push_back(players[(i + offset) % players.size()].m_enemyView);
     }
   }
   Board board(players, gameSettings);
 
   std::vector<std::unique_ptr<PlayerAI>> playerAis(aiCreator(players, enemyPlayerLists, board));
-  assert((int32) playerAis.size() == gameSettings.m_numberOfPlayers);
-  for (int32 i = 0; i < (int32) players.size(); i++) {
+  assert((int32)playerAis.size() == gameSettings.m_numberOfPlayers);
+  for (int32 i = 0; i < (int32)players.size(); i++) {
     players[i].m_ai = playerAis[i].get();
     assert(&playerAis[i]->m_player == &players[i]);
   }
@@ -101,9 +96,13 @@ void GameAdmin::runGame(
     while (!roundOver) {
       Player& currPlayer = players[playerTurn];
       Train& currPlayerTrain = board.m_playerTrains[currPlayer.m_id];
-      auto playTurn = [&] (const std::set<int32>& playablePips, const std::set<id>& playableTrains, const std::string& illegalPlayMessage) {
+      auto playTurn = [&](
+          const std::set<int32>& playablePips,
+          const std::set<id>& playableTrains,
+          const std::string& illegalPlayMessage) {
         if (round.playerHasPlay(currPlayer, playablePips)) {
-          round.playTile(currPlayer, playableTrains, illegalPlayMessage, &activeDoubles, &activeDoublesTrainId, &roundOver);
+          round.playTile(
+              currPlayer, playableTrains, illegalPlayMessage, &activeDoubles, &activeDoublesTrainId, &roundOver);
           if (!activeDoubles) {
             lastActionTurn = playerTurn;
             playerTurn = (playerTurn + 1) % players.size();
@@ -118,7 +117,8 @@ void GameAdmin::runGame(
             }
             if (playablePips.count(tile.m_highPips) == 1 || playablePips.count(tile.m_lowPips) == 1) {
               currPlayerTrain.m_isPublic = false;
-              round.playTile(currPlayer, playableTrains, illegalPlayMessage, &activeDoubles, &activeDoublesTrainId, &roundOver);
+              round.playTile(
+                  currPlayer, playableTrains, illegalPlayMessage, &activeDoubles, &activeDoublesTrainId, &roundOver);
               if (!activeDoubles) {
                 lastActionTurn = playerTurn;
                 playerTurn = (playerTurn + 1) % players.size();
@@ -148,7 +148,8 @@ void GameAdmin::runGame(
         Train& doublesTrain = board.getTrainById(activeDoublesTrainId);
         playablePips = {doublesTrain.m_tiles.back().m_tile.m_highPips};
         playableTrains = {activeDoublesTrainId};
-        illegalPlayMessage = "You must play a valid tile from your hand onto the active doubles.";
+        illegalPlayMessage = "You must play a valid tile from your hand onto "
+                             "the active doubles.";
         playTurn(playablePips, playableTrains, illegalPlayMessage);
       } else if (currPlayerTrain.m_tiles.size() > 0) {
         playablePips = round.standardPlayablePips(currPlayer);
@@ -186,11 +187,11 @@ void GameAdmin::runGame(
   }
 
   std::vector<int32> playerIndices;
-  for (int32 i = 0; i < (int32) players.size(); i++) {
+  for (int32 i = 0; i < (int32)players.size(); i++) {
     playerIndices.push_back(i);
   }
 
-  std::sort(playerIndices.begin(), playerIndices.end(), [&] (int32 p1, int32 p2) -> bool {
+  std::sort(playerIndices.begin(), playerIndices.end(), [&](int32 p1, int32 p2) -> bool {
     if (players[p1].m_score < players[p2].m_score) {
       return true;
     } else if (players[p1].m_score == players[p2].m_score) {
@@ -202,14 +203,14 @@ void GameAdmin::runGame(
   auto startIt = playerIndices.begin();
   while (startIt != playerIndices.end()) {
     auto endIt = startIt + 1;
-    while (endIt != playerIndices.end() && players[*endIt].m_score == players[*startIt].m_score && players[*endIt].m_roundsWon == players[*startIt].m_roundsWon) {
+    while (endIt != playerIndices.end() && players[*endIt].m_score == players[*startIt].m_score &&
+           players[*endIt].m_roundsWon == players[*startIt].m_roundsWon) {
       endIt++;
     }
     std::shuffle(startIt, endIt, RNG::get().m_mt);
     startIt = endIt;
   }
-  for (int32 i = 0; i < (int32) players.size(); i++) {
+  for (int32 i = 0; i < (int32)players.size(); i++) {
     players[playerIndices[i]].m_ai->notifyGameResult(i + 1);
   }
 }
-

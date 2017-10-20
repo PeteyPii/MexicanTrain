@@ -1,10 +1,9 @@
 #pragma once
 
-#include <ostream>
-#include <vector>
 #include "Common.h"
 #include "TrainTile.h"
-
+#include <ostream>
+#include <vector>
 
 class Train {
 public:

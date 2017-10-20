@@ -6,9 +6,13 @@
 #include "RNG.h"
 #include "StatTracker.h"
 
-
-HumanPlayerAI::HumanPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::istream& in, std::ostream* out)
-  : RandomPlayerAI(player, enemyPlayers, board, out), m_in(in) {
+HumanPlayerAI::HumanPlayerAI(
+    const Player& player,
+    const std::vector<EnemyPlayer>& enemyPlayers,
+    const Board& board,
+    std::istream& in,
+    std::ostream* out)
+    : RandomPlayerAI(player, enemyPlayers, board, out), m_in(in) {
 }
 
 HumanPlayerAI::~HumanPlayerAI() {
