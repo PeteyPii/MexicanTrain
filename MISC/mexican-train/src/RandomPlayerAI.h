@@ -13,7 +13,7 @@ class Player;
 
 class RandomPlayerAI : public LoggingPlayerAI {
 public:
-  RandomPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out = nullptr);
+  RandomPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out = nullptr);
   virtual ~RandomPlayerAI();
   virtual TilePlay playTile() override;
   virtual void notifyGameResult(int32 placeFinished) override;

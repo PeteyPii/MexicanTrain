@@ -9,9 +9,9 @@
 #include "Player.h"
 
 
-class Game {
+class Round {
 public:
-  Game(GameSettings gameSettings, Board& board, std::vector<Player>& players);
+  Round(GameSettings gameSettings, Board& board, std::vector<Player>& players);
 
   int32 playCenterTile(std::vector<int32>* incompleteRounds);
   std::set<int32> standardPlayablePips(Player& player);

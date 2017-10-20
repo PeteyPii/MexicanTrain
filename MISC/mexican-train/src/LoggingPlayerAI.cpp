@@ -6,8 +6,8 @@
 #include "Player.h"
 
 
-LoggingPlayerAI::LoggingPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out)
-  : PlayerAI(player, enemyPlayers, board, gameSettings),
+LoggingPlayerAI::LoggingPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out)
+  : PlayerAI(player, enemyPlayers, board),
   m_out(out) {
 }
 

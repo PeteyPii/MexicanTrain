@@ -6,8 +6,8 @@
 #include "StatTracker.h"
 
 
-GreedyPlayerAI::GreedyPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out)
-  : LoggingPlayerAI(player, enemyPlayers, board, gameSettings, out) {
+GreedyPlayerAI::GreedyPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out)
+  : LoggingPlayerAI(player, enemyPlayers, board, out) {
   for (const auto& kv : m_board.m_playerTrains) {
     m_allPlaceIds.push_back(kv.second.m_id);
   }

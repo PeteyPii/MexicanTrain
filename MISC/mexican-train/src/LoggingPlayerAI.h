@@ -13,7 +13,7 @@ class Player;
 
 class LoggingPlayerAI : public PlayerAI {
 public:
-  LoggingPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out = nullptr);
+  LoggingPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out = nullptr);
   virtual ~LoggingPlayerAI();
   virtual TilePlay playTile() override = 0;
   virtual void message(const std::string& msg) override;

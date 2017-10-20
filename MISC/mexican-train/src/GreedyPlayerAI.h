@@ -13,7 +13,7 @@ class Player;
 
 class GreedyPlayerAI : public LoggingPlayerAI {
 public:
-  GreedyPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out = nullptr);
+  GreedyPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out = nullptr);
   virtual ~GreedyPlayerAI();
   virtual TilePlay playTile() override;
   virtual void notifyTilePlay(id playerId, id placeId, id tileId) override;

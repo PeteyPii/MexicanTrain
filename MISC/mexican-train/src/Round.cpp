@@ -1,16 +1,16 @@
-#include "Game.h"
+#include "Round.h"
 
 #include <algorithm>
 #include "PlayerAI.h"
 #include "RNG.h"
 
-Game::Game(GameSettings gameSettings, Board& board, std::vector<Player>& players)
+Round::Round(GameSettings gameSettings, Board& board, std::vector<Player>& players)
   : m_gameSettings(gameSettings),
   m_board(board),
   m_players(players) {
 }
 
-int32 Game::playCenterTile(std::vector<int32>* incompleteRounds) {
+int32 Round::playCenterTile(std::vector<int32>* incompleteRounds) {
   while (true) {
     for (auto incompleteRoundIt = incompleteRounds->begin(); incompleteRoundIt != incompleteRounds->end(); incompleteRoundIt++) {
       for (auto playerIt = m_players.begin(); playerIt != m_players.end(); playerIt++) {
@@ -66,7 +66,7 @@ int32 Game::playCenterTile(std::vector<int32>* incompleteRounds) {
   }
 }
 
-std::set<int32> Game::standardPlayablePips(Player& player) {
+std::set<int32> Round::standardPlayablePips(Player& player) {
   std::set<int32> playablePips;
   for (auto& kv : m_board.m_playerTrains) {
     if (kv.first == player.m_id || kv.second.m_isPublic) {
@@ -89,7 +89,7 @@ std::set<int32> Game::standardPlayablePips(Player& player) {
   return playablePips;
 }
 
-std::set<id> Game::standardPlayableTrains(Player& player) {
+std::set<id> Round::standardPlayableTrains(Player& player) {
   std::set<id> playableTrains;
   for (auto& kv : m_board.m_playerTrains) {
     if (kv.first == player.m_id || kv.second.m_isPublic) {
@@ -100,7 +100,7 @@ std::set<id> Game::standardPlayableTrains(Player& player) {
   return playableTrains;
 }
 
-bool Game::playerHasPlay(Player& player, std::set<int32> playablePips) {
+bool Round::playerHasPlay(Player& player, std::set<int32> playablePips) {
   for (auto& tile : player.m_hand) {
     if (playablePips.count(tile.m_highPips) > 0 || playablePips.count(tile.m_lowPips) > 0) {
       return true;
@@ -109,7 +109,7 @@ bool Game::playerHasPlay(Player& player, std::set<int32> playablePips) {
   return false;
 }
 
-void Game::playTile(Player& player, std::set<id> validTrainIds, const std::string& illegalPlayMessage, bool* activeDoubles, id* activeDoublesTrainId, bool* roundOver) {
+void Round::playTile(Player& player, std::set<id> validTrainIds, const std::string& illegalPlayMessage, bool* activeDoubles, id* activeDoublesTrainId, bool* roundOver) {
   while (true) {
     TilePlay tilePlay = player.m_ai->playTile();
     auto tileIt = find_if(player.m_hand.begin(), player.m_hand.end(), [&] (const Tile& tile) -> bool { return tile.m_id == tilePlay.m_tileId; });

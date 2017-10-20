@@ -6,7 +6,7 @@
 #include "RNG.h"
 
 
-Board::Board(const std::vector<Player>& players) {
+Board::Board(const std::vector<Player>& players, const GameSettings& gameSettings) : m_centerPlaceId(IdentityGenerator::get().nextId()), m_gameSettings(gameSettings) {
   for (const auto& player : players) {
     m_playerTrains.insert(std::make_pair(player.m_id, Train()));
   }
@@ -15,12 +15,9 @@ Board::Board(const std::vector<Player>& players) {
   for (auto& kv : m_playerTrains) {
     m_idToTrain.insert(std::make_pair(kv.second.m_id, &kv.second));
   }
-  m_centerPlaceId = IdentityGenerator::get().nextId();
 }
 
-void Board::newRound(int32 maxPips) {
-  assert(maxPips >= 0);
-
+void Board::newRound() {
   for (auto& kv : m_playerTrains) {
     kv.second.newRound();
   }
@@ -29,9 +26,9 @@ void Board::newRound(int32 maxPips) {
   m_publicTrain.m_isPublic = true;
   m_centerTile = {};
 
-  for (int32 highPip = 0; highPip <= maxPips; highPip++) {
-    for (int32 lowPip = 0; lowPip <= highPip; lowPip++) {
-      m_tilePool.emplace_back(highPip, lowPip);
+  for (int32 highPips = 0; highPips <= m_gameSettings.m_maxPips; highPips++) {
+    for (int32 lowPips = 0; lowPips <= highPips; lowPips++) {
+      m_tilePool.emplace_back(highPips, lowPips);
     }
   }
 

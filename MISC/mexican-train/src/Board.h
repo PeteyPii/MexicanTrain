@@ -5,6 +5,7 @@
 #include <experimental/optional>
 #include <vector>
 #include "Common.h"
+#include "GameSettings.h"
 #include "Player.h"
 #include "Tile.h"
 #include "Train.h"
@@ -12,8 +13,8 @@
 
 class Board {
 public:
-  Board(const std::vector<Player>& players);
-  void newRound(int32 maxPips);
+  Board(const std::vector<Player>& players, const GameSettings& gameSettings);
+  void newRound();
   uint32 poolSize() const;
   Tile dealTile();
   Train& getTrainById(id trainId);
@@ -21,9 +22,10 @@ public:
   bool trainExists(id trainId) const;
 
   std::map<id, Train> m_playerTrains;
-  Train m_publicTrain;
   std::experimental::optional<Tile> m_centerTile;
   id m_centerPlaceId;
+  Train m_publicTrain;
+  const GameSettings& m_gameSettings;
 
 private:
   std::vector<Tile> m_tilePool;

@@ -18,7 +18,7 @@ struct TilePlay {
 
 class PlayerAI {
 public:
-  PlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings);
+  PlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board);
   virtual ~PlayerAI();
   virtual TilePlay playTile() = 0;
   virtual void message(const std::string& msg);
@@ -36,5 +36,4 @@ public:
 protected:
   const std::vector<EnemyPlayer>& m_enemyPlayers;
   const Board& m_board;
-  const GameSettings& m_gameSettings;
 };

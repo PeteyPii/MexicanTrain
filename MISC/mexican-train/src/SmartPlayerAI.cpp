@@ -14,8 +14,8 @@
 using namespace std;
 
 
-SmartPlayerAI::SmartPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out)
-  : RandomPlayerAI(player, enemyPlayers, board, gameSettings, out), m_playerTrain(m_board.m_playerTrains.find(m_player.m_id)->second) {
+SmartPlayerAI::SmartPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out)
+  : RandomPlayerAI(player, enemyPlayers, board, out), m_playerTrain(m_board.m_playerTrains.find(m_player.m_id)->second) {
   m_otherTrains.push_back(&m_board.m_publicTrain);
   for (auto& kv : m_board.m_playerTrains) {
     if (kv.first != m_player.m_id) {
@@ -26,8 +26,6 @@ SmartPlayerAI::SmartPlayerAI(const Player& player, const std::vector<EnemyPlayer
 
 SmartPlayerAI::~SmartPlayerAI() {
 }
-
-#include <iostream>
 
 TilePlay SmartPlayerAI::playTile() {
   if (!m_board.m_centerTile) {
@@ -41,7 +39,7 @@ TilePlay SmartPlayerAI::playTile() {
 
   if (m_reevaluatePlays) {
     // TODO: support repeated dominos
-    vector<set<int32>> edgeSets(m_gameSettings.m_maxPips + 1);
+    vector<set<int32>> edgeSets(m_board.m_gameSettings.m_maxPips + 1);
     for (auto& tile : m_player.m_hand) {
       edgeSets[tile.m_highPips].insert(tile.m_lowPips);
       edgeSets[tile.m_lowPips].insert(tile.m_highPips);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <istream>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -13,7 +14,7 @@ class Player;
 
 class HumanPlayerAI : public RandomPlayerAI {
 public:
-  HumanPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out = nullptr);
+  HumanPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::istream& in, std::ostream* out = nullptr);
   virtual ~HumanPlayerAI();
   virtual TilePlay playTile() override;
   virtual void notifyTilePlay(id playerId, id placeId, id tileId) override;
@@ -21,5 +22,7 @@ public:
   virtual void message(const std::string& msg) override;
 
 private:
-  bool m_newPlay = true;
+  bool m_successfulPlay = true;
+  bool m_makeRandomPlay = false;
+  std::istream& m_in;
 };

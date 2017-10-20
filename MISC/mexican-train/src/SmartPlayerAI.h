@@ -15,7 +15,7 @@ class Train;
 
 class SmartPlayerAI : public RandomPlayerAI {
 public:
-  SmartPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out = nullptr);
+  SmartPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out = nullptr);
   virtual ~SmartPlayerAI();
   virtual TilePlay playTile() override;
   virtual void notifyRoundStart();

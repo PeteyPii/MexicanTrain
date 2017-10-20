@@ -5,8 +5,8 @@
 #include "StatTracker.h"
 
 
-RandomPlayerAI::RandomPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings, std::ostream* out)
-  : LoggingPlayerAI(player, enemyPlayers, board, gameSettings, out) {
+RandomPlayerAI::RandomPlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out)
+  : LoggingPlayerAI(player, enemyPlayers, board, out) {
   m_allPlaceIds.push_back(m_board.m_centerPlaceId);
   m_allPlaceIds.push_back(m_board.m_publicTrain.m_id);
   for (const auto& kv : m_board.m_playerTrains) {

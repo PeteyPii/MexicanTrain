@@ -4,11 +4,10 @@
 #include "Player.h"
 
 
-PlayerAI::PlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, const GameSettings& gameSettings)
+PlayerAI::PlayerAI(const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board)
   : m_player(player),
   m_enemyPlayers(enemyPlayers),
-  m_board(board),
-  m_gameSettings(gameSettings) {
+  m_board(board) {
 }
 
 PlayerAI::~PlayerAI() {

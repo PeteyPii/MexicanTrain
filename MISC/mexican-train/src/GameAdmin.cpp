@@ -5,9 +5,9 @@
 #include <iostream>
 #include <set>
 #include "Board.h"
-#include "Game.h"
 #include "PlayerAI.h"
 #include "RNG.h"
+#include "Round.h"
 
 using namespace std;
 
@@ -49,7 +49,7 @@ void GameAdmin::runGame(
       enemyPlayerLists[i].push_back(players[(i + offset) % players.size()].m_enemyView);
     }
   }
-  Board board(players);
+  Board board(players, gameSettings);
 
   std::vector<std::unique_ptr<PlayerAI>> playerAis(aiCreator(players, enemyPlayerLists, board));
   assert((int32) playerAis.size() == gameSettings.m_numberOfPlayers);
@@ -69,7 +69,7 @@ void GameAdmin::runGame(
   reverse(incompleteRounds.begin(), incompleteRounds.end());
 
   while (incompleteRounds.size() > 0) {
-    board.newRound(gameSettings.m_maxPips);
+    board.newRound();
     for (auto& player : players) {
       player.newRound();
     }
@@ -92,9 +92,9 @@ void GameAdmin::runGame(
     int32 lastActionTurn = -1;
     bool activeDoubles = false;
     id activeDoublesTrainId = NULL_ID;
-    Game game(gameSettings, board, players);
+    Round round(gameSettings, board, players);
 
-    playerTurn = game.playCenterTile(&incompleteRounds);
+    playerTurn = round.playCenterTile(&incompleteRounds);
     lastActionTurn = playerTurn;
 
     bool roundOver = false;
@@ -102,8 +102,8 @@ void GameAdmin::runGame(
       Player& currPlayer = players[playerTurn];
       Train& currPlayerTrain = board.m_playerTrains[currPlayer.m_id];
       auto playTurn = [&] (const std::set<int32>& playablePips, const std::set<id>& playableTrains, const std::string& illegalPlayMessage) {
-        if (game.playerHasPlay(currPlayer, playablePips)) {
-          game.playTile(currPlayer, playableTrains, illegalPlayMessage, &activeDoubles, &activeDoublesTrainId, &roundOver);
+        if (round.playerHasPlay(currPlayer, playablePips)) {
+          round.playTile(currPlayer, playableTrains, illegalPlayMessage, &activeDoubles, &activeDoublesTrainId, &roundOver);
           if (!activeDoubles) {
             lastActionTurn = playerTurn;
             playerTurn = (playerTurn + 1) % players.size();
@@ -118,7 +118,7 @@ void GameAdmin::runGame(
             }
             if (playablePips.count(tile.m_highPips) == 1 || playablePips.count(tile.m_lowPips) == 1) {
               currPlayerTrain.m_isPublic = false;
-              game.playTile(currPlayer, playableTrains, illegalPlayMessage, &activeDoubles, &activeDoublesTrainId, &roundOver);
+              round.playTile(currPlayer, playableTrains, illegalPlayMessage, &activeDoubles, &activeDoublesTrainId, &roundOver);
               if (!activeDoubles) {
                 lastActionTurn = playerTurn;
                 playerTurn = (playerTurn + 1) % players.size();
@@ -151,8 +151,8 @@ void GameAdmin::runGame(
         illegalPlayMessage = "You must play a valid tile from your hand onto the active doubles.";
         playTurn(playablePips, playableTrains, illegalPlayMessage);
       } else if (currPlayerTrain.m_tiles.size() > 0) {
-        playablePips = game.standardPlayablePips(currPlayer);
-        playableTrains = game.standardPlayableTrains(currPlayer);
+        playablePips = round.standardPlayablePips(currPlayer);
+        playableTrains = round.standardPlayableTrains(currPlayer);
         illegalPlayMessage = "You must make a valid play.";
         playTurn(playablePips, playableTrains, illegalPlayMessage);
       } else {
