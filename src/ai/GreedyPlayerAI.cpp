@@ -5,32 +5,34 @@
 #include "StatTracker.h"
 #include <algorithm>
 
-GreedyPlayerAI::GreedyPlayerAI(
-    const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out)
-    : LoggingPlayerAI(player, enemyPlayers, board, out) {
-  for (const auto& kv : m_board.m_playerTrains) {
-    m_allPlaceIds.push_back(kv.second.m_id);
-  }
-  m_allPlaceIds.push_back(m_board.m_publicTrain.m_id);
-  m_allPlaceIds.push_back(m_board.m_centerPlaceId);
+GreedyPlayerAI::GreedyPlayerAI(std::ostream* out) : LoggingPlayerAI(out) {
 }
 
 GreedyPlayerAI::~GreedyPlayerAI() {
 }
 
+void GreedyPlayerAI::setUp(const Player* player, const std::vector<EnemyPlayer>* enemyPlayers, const Board* board) {
+  PlayerAI::setUp(player, enemyPlayers, board);
+  for (const auto& kv : m_board->m_playerTrains) {
+    m_allPlaceIds.push_back(kv.second.m_id);
+  }
+  m_allPlaceIds.push_back(m_board->m_publicTrain.m_id);
+  m_allPlaceIds.push_back(m_board->m_centerPlaceId);
+}
+
 TilePlay GreedyPlayerAI::playTile() {
   if (m_reevaluatePlays) {
     std::vector<int32> sortedIndices;
-    for (int32 i = 0; i < (int32)m_player.m_hand.size(); i++) {
+    for (int32 i = 0; i < (int32)m_player->m_hand.size(); i++) {
       sortedIndices.push_back(i);
     }
     std::sort(sortedIndices.begin(), sortedIndices.end(), [&](int32 left, int32 right) -> bool {
-      return m_player.m_hand[left].m_highPips + m_player.m_hand[left].m_lowPips >
-          m_player.m_hand[right].m_highPips + m_player.m_hand[right].m_lowPips;
+      return m_player->m_hand[left].m_highPips + m_player->m_hand[left].m_lowPips >
+          m_player->m_hand[right].m_highPips + m_player->m_hand[right].m_lowPips;
     });
     m_sortedTileIds.clear();
     for (int32 index : sortedIndices) {
-      m_sortedTileIds.push_back(m_player.m_hand[index].m_id);
+      m_sortedTileIds.push_back(m_player->m_hand[index].m_id);
     }
     m_tileIndex = 0;
     m_placeIndex = 0;
@@ -53,10 +55,7 @@ void GreedyPlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
 
 void GreedyPlayerAI::notifyGameResult(int32 placeFinished) {
   LoggingPlayerAI::notifyGameResult(placeFinished);
-  int32 playerCount = 1 + m_enemyPlayers.size();
-  Stats& stats = StatTracker::get().m_aiStats["GreedyPlayerAI"][playerCount];
-  stats.m_finishPlaceCounts[placeFinished] += 1;
-  stats.m_scores.push_back(m_player.m_score);
+  trackGameResult("GreedyPlayerAI", placeFinished);
 }
 
 void GreedyPlayerAI::message(const std::string& msg) {

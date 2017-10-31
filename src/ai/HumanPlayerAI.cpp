@@ -5,13 +5,7 @@
 #include "StatTracker.h"
 #include <iostream>
 
-HumanPlayerAI::HumanPlayerAI(
-    const Player& player,
-    const std::vector<EnemyPlayer>& enemyPlayers,
-    const Board& board,
-    std::istream& in,
-    std::ostream* out)
-    : RandomPlayerAI(player, enemyPlayers, board, out), m_in(in) {
+HumanPlayerAI::HumanPlayerAI(std::istream& in, std::ostream* out) : RandomPlayerAI(out), m_in(in) {
 }
 
 HumanPlayerAI::~HumanPlayerAI() {
@@ -23,11 +17,11 @@ TilePlay HumanPlayerAI::playTile() {
   } else {
     if (m_successfulPlay && m_out) {
       *m_out << "\n";
-      *m_out << m_board;
-      for (auto& enemyPlayer : m_enemyPlayers) {
+      *m_out << *m_board;
+      for (auto& enemyPlayer : *m_enemyPlayers) {
         *m_out << enemyPlayer;
       }
-      *m_out << m_player;
+      *m_out << *m_player;
       *m_out << "\n";
     }
 
@@ -80,10 +74,7 @@ void HumanPlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
 
 void HumanPlayerAI::notifyGameResult(int32 placeFinished) {
   LoggingPlayerAI::notifyGameResult(placeFinished);
-  int32 playerCount = 1 + m_enemyPlayers.size();
-  Stats& stats = StatTracker::get().m_aiStats["HumanPlayerAI"][playerCount];
-  stats.m_finishPlaceCounts[placeFinished] += 1;
-  stats.m_scores.push_back(m_player.m_score);
+  trackGameResult("HumanPlayerAI", placeFinished);
 }
 
 void HumanPlayerAI::message(const std::string& msg) {

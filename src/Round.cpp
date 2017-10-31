@@ -4,13 +4,14 @@
 #include "RNG.h"
 #include <algorithm>
 
-Round::Round(GameSettings gameSettings, Board& board, std::vector<Player>& players)
-    : m_gameSettings(gameSettings), m_board(board), m_players(players) {
+Round::Round(
+    GameSettings gameSettings, Board& board, std::vector<Player>& players, std::vector<int32>& incompleteRounds)
+    : m_gameSettings(gameSettings), m_board(board), m_players(players), m_incompleteRounds(incompleteRounds) {
 }
 
-int32 Round::playCenterTile(std::vector<int32>* incompleteRounds) {
+int32 Round::playCenterTile() {
   while (true) {
-    for (auto incompleteRoundIt = incompleteRounds->begin(); incompleteRoundIt != incompleteRounds->end();
+    for (auto incompleteRoundIt = m_incompleteRounds.begin(); incompleteRoundIt != m_incompleteRounds.end();
          incompleteRoundIt++) {
       for (auto playerIt = m_players.begin(); playerIt != m_players.end(); playerIt++) {
         for (auto tileIt = playerIt->m_hand.begin(); tileIt != playerIt->m_hand.end(); tileIt++) {
@@ -27,7 +28,7 @@ int32 Round::playCenterTile(std::vector<int32>* incompleteRounds) {
               if (validPlay) {
                 m_board.m_centerTile = *playedTileIt;
                 playerIt->m_hand.erase(playedTileIt);
-                incompleteRounds->erase(incompleteRoundIt);
+                m_incompleteRounds.erase(incompleteRoundIt);
                 for (auto& player : m_players) {
                   player.m_ai->notifyTilePlay(playerIt->m_id, m_board.m_centerPlaceId, m_board.m_centerTile->m_id);
                 }
@@ -112,13 +113,7 @@ bool Round::playerHasPlay(Player& player, std::set<int32> playablePips) {
   return false;
 }
 
-void Round::playTile(
-    Player& player,
-    std::set<id> validTrainIds,
-    const std::string& illegalPlayMessage,
-    bool* activeDoubles,
-    id* activeDoublesTrainId,
-    bool* roundOver) {
+void Round::playTile(Player& player, std::set<id> validTrainIds, const std::string& illegalPlayMessage) {
   while (true) {
     TilePlay tilePlay = player.m_ai->playTile();
     auto tileIt = find_if(player.m_hand.begin(), player.m_hand.end(), [&](const Tile& tile) -> bool {
@@ -143,10 +138,10 @@ void Round::playTile(
         for (auto& notifiee : m_players) {
           notifiee.m_ai->notifyTilePlay(player.m_id, tilePlay.m_placeId, tilePlay.m_tileId);
         }
-        *activeDoubles = false;
-        *activeDoublesTrainId = NULL_ID;
+        m_areDoublesActive = false;
+        m_activeDoublesTrainId = NULL_ID;
         if (player.m_hand.size() == 0) {
-          *roundOver = true;
+          m_isRoundOver = true;
         } else if (playedTile.m_highPips == playedTile.m_lowPips) {
           int32 countPlayed = 0;
           if (m_board.m_centerTile->m_highPips == playedTile.m_highPips) {
@@ -167,13 +162,129 @@ void Round::playTile(
             }
           }
           if (countPlayed < m_gameSettings.m_maxPips + 1) {
-            *activeDoubles = true;
-            *activeDoublesTrainId = tilePlay.m_placeId;
+            m_areDoublesActive = true;
+            m_activeDoublesTrainId = tilePlay.m_placeId;
           }
         }
         break;
       }
     }
     player.m_ai->message(illegalPlayMessage);
+  }
+}
+
+void Round::run() {
+  m_board.newRound();
+  for (auto& player : m_players) {
+    player.newRound();
+  }
+
+  for (auto& player : m_players) {
+    player.m_ai->notifyRoundStart();
+  }
+
+  for (int32 i = 0; i < m_gameSettings.m_startingHandSize; i++) {
+    for (auto& player : m_players) {
+      Tile tile = m_board.dealTile();
+      player.m_hand.push_back(tile);
+      for (auto& otherPlayer : m_players) {
+        otherPlayer.m_ai->notifyTileDraw(player.m_id);
+      }
+    }
+  }
+
+  int32 playerTurn = -1;
+  int32 lastActionTurn = -1;
+  m_areDoublesActive = false;
+  m_activeDoublesTrainId = NULL_ID;
+
+  playerTurn = playCenterTile();
+  lastActionTurn = playerTurn;
+
+  m_isRoundOver = false;
+  while (!m_isRoundOver) {
+    Player& currPlayer = m_players[playerTurn];
+    Train& currPlayerTrain = m_board.m_playerTrains[currPlayer.m_id];
+    auto playTurn =
+        [&](const std::set<int32>& playablePips,
+            const std::set<id>& playableTrains,
+            const std::string& illegalPlayMessage) {
+          if (playerHasPlay(currPlayer, playablePips)) {
+            playTile(currPlayer, playableTrains, illegalPlayMessage);
+            if (!m_areDoublesActive) {
+              lastActionTurn = playerTurn;
+              playerTurn = (playerTurn + 1) % m_players.size();
+            }
+          } else {
+            currPlayerTrain.m_isPublic = true;
+            if (m_board.poolSize() > 0) {
+              Tile tile = m_board.dealTile();
+              currPlayer.m_hand.push_back(tile);
+              for (auto& player : m_players) {
+                player.m_ai->notifyTileDraw(currPlayer.m_id);
+              }
+              if (playablePips.count(tile.m_highPips) == 1 || playablePips.count(tile.m_lowPips) == 1) {
+                currPlayerTrain.m_isPublic = false;
+                playTile(currPlayer, playableTrains, illegalPlayMessage);
+                if (!m_areDoublesActive) {
+                  lastActionTurn = playerTurn;
+                  playerTurn = (playerTurn + 1) % m_players.size();
+                }
+              } else {
+                lastActionTurn = playerTurn;
+                playerTurn = (playerTurn + 1) % m_players.size();
+              }
+            } else if (lastActionTurn == playerTurn) {
+              for (auto& player : m_players) {
+                player.m_ai->notifyPassTurn(currPlayer.m_id);
+              }
+              m_isRoundOver = true;
+            } else {
+              playerTurn = (playerTurn + 1) % m_players.size();
+              for (auto& player : m_players) {
+                player.m_ai->notifyPassTurn(currPlayer.m_id);
+              }
+            }
+          }
+        };
+
+    std::set<int32> playablePips;
+    std::set<id> playableTrains;
+    std::string illegalPlayMessage;
+    if (m_areDoublesActive) {
+      Train& doublesTrain = m_board.getTrainById(m_activeDoublesTrainId);
+      playablePips = {doublesTrain.m_tiles.back().m_tile.m_highPips};
+      playableTrains = {m_activeDoublesTrainId};
+      illegalPlayMessage = "You must play a valid tile from your hand onto "
+                           "the active doubles.";
+      playTurn(playablePips, playableTrains, illegalPlayMessage);
+    } else if (currPlayerTrain.m_tiles.size() > 0) {
+      playablePips = standardPlayablePips(currPlayer);
+      playableTrains = standardPlayableTrains(currPlayer);
+      illegalPlayMessage = "You must make a valid play.";
+      playTurn(playablePips, playableTrains, illegalPlayMessage);
+    } else {
+      playablePips = {m_board.m_centerTile->m_highPips};
+      playableTrains = {currPlayerTrain.m_id};
+      illegalPlayMessage = "You must play onto your own train first.";
+      playTurn(playablePips, playableTrains, illegalPlayMessage);
+    }
+  }
+
+  for (auto& player : m_players) {
+    for (auto& tile : player.m_hand) {
+      player.m_score += tile.m_highPips;
+      player.m_score += tile.m_lowPips;
+    }
+  }
+
+  for (auto& player : m_players) {
+    if (player.m_hand.size() == 0) {
+      player.m_roundsWon++;
+    }
+  }
+
+  for (auto& player : m_players) {
+    player.m_ai->notifyRoundEnd();
   }
 }

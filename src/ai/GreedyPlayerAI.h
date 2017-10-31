@@ -12,12 +12,9 @@ class Player;
 
 class GreedyPlayerAI : public LoggingPlayerAI {
 public:
-  GreedyPlayerAI(
-      const Player& player,
-      const std::vector<EnemyPlayer>& enemyPlayers,
-      const Board& board,
-      std::ostream* out = nullptr);
+  GreedyPlayerAI(std::ostream* out = nullptr);
   virtual ~GreedyPlayerAI();
+  virtual void setUp(const Player* player, const std::vector<EnemyPlayer>* enemyPlayers, const Board* board) override;
   virtual TilePlay playTile() override;
   virtual void notifyTilePlay(id playerId, id placeId, id tileId) override;
   virtual void notifyGameResult(int32 placeFinished) override;

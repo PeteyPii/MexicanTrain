@@ -14,12 +14,9 @@ class Train;
 
 class SmartPlayerAI : public RandomPlayerAI {
 public:
-  SmartPlayerAI(
-      const Player& player,
-      const std::vector<EnemyPlayer>& enemyPlayers,
-      const Board& board,
-      std::ostream* out = nullptr);
+  SmartPlayerAI(std::ostream* out = nullptr);
   virtual ~SmartPlayerAI();
+  virtual void setUp(const Player* player, const std::vector<EnemyPlayer>* enemyPlayers, const Board* board) override;
   virtual TilePlay playTile() override;
   virtual void notifyRoundStart();
   virtual void notifyTilePlay(id playerId, id placeId, id tileId) override;
@@ -31,7 +28,7 @@ public:
 private:
   std::vector<id> m_plannedTrain;
   std::vector<id> m_spareTiles;
-  const Train& m_playerTrain;
+  const Train* m_playerTrain = nullptr;
   std::vector<const Train*> m_otherTrains;
   bool m_reevaluatePlays = true;
   bool m_tryingLockPlay = false;

@@ -1,0 +1,22 @@
+#pragma once
+
+#include "Common.h"
+#include "GameSettings.h"
+#include "Player.h"
+#include <memory>
+#include <vector>
+
+class Board;
+class PlayerAI;
+
+class Game {
+public:
+  Game(std::ostream* out, const GameSettings& gameSettings, std::vector<std::unique_ptr<PlayerAI>>& playerAis);
+  void run();
+
+private:
+  std::ostream* m_out;
+  GameSettings m_gameSettings;
+  std::vector<std::unique_ptr<PlayerAI>> m_playerAis;
+  bool m_areSettingsValid = true;
+};

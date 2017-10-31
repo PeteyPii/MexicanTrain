@@ -5,9 +5,7 @@
 #include <sstream>
 #include <string>
 
-LoggingPlayerAI::LoggingPlayerAI(
-    const Player& player, const std::vector<EnemyPlayer>& enemyPlayers, const Board& board, std::ostream* out)
-    : PlayerAI(player, enemyPlayers, board), m_out(out) {
+LoggingPlayerAI::LoggingPlayerAI(std::ostream* out) : PlayerAI(), m_out(out) {
 }
 
 LoggingPlayerAI::~LoggingPlayerAI() {
@@ -60,10 +58,10 @@ void LoggingPlayerAI::notifyRoundEnd() {
 void LoggingPlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
   if (m_out) {
     std::string tileStr;
-    if (placeId == m_board.m_centerPlaceId) {
-      tileStr = toString(*m_board.m_centerTile);
+    if (placeId == m_board->m_centerPlaceId) {
+      tileStr = toString(*m_board->m_centerTile);
     } else {
-      tileStr = toString(m_board.getTrainById(placeId).m_tiles.back().m_tile);
+      tileStr = toString(m_board->getTrainById(placeId).m_tiles.back().m_tile);
     }
     *m_out << messagePrefix() << "{" << playerId << "} played {" << tileId << "}=" << tileStr << " onto {" << placeId
            << "}.\n";
@@ -72,8 +70,8 @@ void LoggingPlayerAI::notifyTilePlay(id playerId, id placeId, id tileId) {
 
 void LoggingPlayerAI::notifyTileDraw(id playerId) {
   if (m_out) {
-    if (m_player.m_id == playerId) {
-      *m_out << messagePrefix() << "{" << playerId << "} drew " << m_player.m_hand.back() << ".\n";
+    if (m_player->m_id == playerId) {
+      *m_out << messagePrefix() << "{" << playerId << "} drew " << m_player->m_hand.back() << ".\n";
     } else {
       *m_out << messagePrefix() << "{" << playerId << "} drew a tile.\n";
     }
@@ -88,6 +86,6 @@ void LoggingPlayerAI::notifyPassTurn(id playerId) {
 
 std::string LoggingPlayerAI::messagePrefix() {
   std::stringstream ss;
-  ss << "<" << m_player.m_id << "> ";
+  ss << "<" << m_player->m_id << "> ";
   return ss.str();
 }
