@@ -1,10 +1,9 @@
 #include "HumanPlayerAI.h"
 
-#include <iostream>
-// #include <numeric_limits>
 #include "Board.h"
 #include "RNG.h"
 #include "StatTracker.h"
+#include <iostream>
 
 HumanPlayerAI::HumanPlayerAI(
     const Player& player,
@@ -19,7 +18,7 @@ HumanPlayerAI::~HumanPlayerAI() {
 }
 
 TilePlay HumanPlayerAI::playTile() {
-  if (m_makeRandomPlay) {
+  if (m_makeRandomPlay || m_in.eof()) {
     return RandomPlayerAI::playTile();
   } else {
     if (m_successfulPlay && m_out) {
@@ -34,7 +33,6 @@ TilePlay HumanPlayerAI::playTile() {
 
     id tileId;
     id placeId;
-    // TODO: Play randomly if stream has ended.
     while (true) {
       if (m_out) {
         *m_out << "ID of tile to play: ";
@@ -42,6 +40,8 @@ TilePlay HumanPlayerAI::playTile() {
       m_in >> tileId;
       if (m_in) {
         break;
+      } else if (m_in.eof()) {
+        return RandomPlayerAI::playTile();
       } else {
         m_in.clear();
         m_in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -54,6 +54,8 @@ TilePlay HumanPlayerAI::playTile() {
       m_in >> placeId;
       if (m_in) {
         break;
+      } else if (m_in.eof()) {
+        return RandomPlayerAI::playTile();
       } else {
         m_in.clear();
         m_in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -85,7 +87,9 @@ void HumanPlayerAI::notifyGameResult(int32 placeFinished) {
 }
 
 void HumanPlayerAI::message(const std::string& msg) {
-  if (!m_makeRandomPlay) {
-    std::cout << msg << std::endl;
+  if (!m_makeRandomPlay && !m_in.eof()) {
+    if (m_out) {
+      *m_out << msg << std::endl;
+    }
   }
 }
