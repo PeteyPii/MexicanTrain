@@ -21,8 +21,6 @@ CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -std=c++1z -Wall -O2
 all: $(TARGET_EXECS)
 
 $(TARGET_EXECS): $(BUILD_DIR)/%: $(BUILD_DIR)/$(TARGETS_DIR)/%.cpp.o $(OBJS)
-	echo "MAKING TARGET"
-	echo $(TARGET_EXECS)
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 $(BUILD_DIR)/%.cpp.o: %.cpp
