@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './Home.css';
-import MainMenu from './MainMenu.js';
+import MainMenu from './MainMenu';
 
 class Home extends Component {
   render() {

@@ -6,6 +6,48 @@ body {
 
 html, body, #root {
   height: 100%;
+  color: #EEE;
+}
+
+a {
+  color: #EEE;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #DDD;
+}
+
+a.disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+a.disabled:hover {
+  color: #EEE;
+}
+
+form {
+  background-color: #1C5435;
+  border-radius: 5px;
+}
+
+form button {
+  border: none;
+  color: #EEE;
+  background-color: #41A991;
+  border-radius: 5px;
+}
+
+form button:hover {
+  background-color: #50b09a;
+}
+
+input {
+  color: #111;
+  background-color: #EEE;
+  border-radius: 5px;
+  border: solid #41A991 2px;
 }
 
 .StaticBackground {

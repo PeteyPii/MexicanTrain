@@ -1,0 +1,25 @@
+.Profile {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Profile form {
+  width: 500px;
+  padding: 10px;
+}
+
+.Profile input {
+  font-size: 2em;
+  margin: 0 0 10px 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 0.5ch;
+}
+
+.Profile button {
+  font-size: 2em;
+  margin-top: 10px;
+  width: 100%;
+}

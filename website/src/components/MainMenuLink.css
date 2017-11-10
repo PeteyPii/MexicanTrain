@@ -1,0 +1,9 @@
+a.MainMenuLink, .MainMenu button {
+  font-size: 3em;
+}
+
+.MainMenu button {
+  color: #EEE;
+  background: none;
+  border: none;
+}
