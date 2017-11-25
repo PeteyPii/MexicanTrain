@@ -4,7 +4,7 @@ var http = require('http');
 
 var express = require('express');
 
-var addWebSocketListener = require('./lib/ws.js');
+var Backend = require('./lib/backend');
 
 var app = express();
 
@@ -13,13 +13,13 @@ app.use(function logRequests(req, res, next) {
   next();
 });
 
-httpServer = http.createServer(app);
+var httpServer = http.createServer(app);
 app.get('/', function(req, res) {
   res.redirect('/mexican-train');
 });
-addWebSocketListener(httpServer);
+var backend = new Backend(httpServer);
 
-httpServer.listen(5555, function() {
+httpServer.listen(4000, function() {
   var host = httpServer.address().address;
   var port = httpServer.address().port;
   console.log('Server listening at http://' + host + ':' + port);

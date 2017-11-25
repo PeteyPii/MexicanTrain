@@ -1,0 +1,5 @@
+syntax = "proto2";
+
+enum RequestType {
+  CREATE_GAME_LOBBY = 0;
+}
