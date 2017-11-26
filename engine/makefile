@@ -5,9 +5,10 @@ SRC_DIR ?= ./src
 PROTO_DIR ?= ../common/src
 TARGETS_DIR ?= ./src/targets
 
+SRCS := $(shell find $(SRC_DIR) -name '*.cpp' -not -path '$(TARGETS_DIR)/**')
 HEADERS := $(shell find $(SRC_DIR) -name '*.h')
 PROTOS := $(shell find $(PROTO_DIR) -name '*.proto')
-SRCS := $(shell find $(SRC_DIR) -name '*.cpp' -not -path '$(TARGETS_DIR)/**')
+PROTO_HEADERS := $(PROTOS:$(PROTO_DIR)/%.proto=$(BUILD_DIR)/gen/%.pb.h)
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o) $(PROTOS:$(PROTO_DIR)/%.proto=$(BUILD_DIR)/gen/%.pb.cc.o)
 DEPS := $(OBJS:.o=.d)
 TARGET_SRCS := $(shell find $(TARGETS_DIR) -name *.cpp)
@@ -18,9 +19,9 @@ INC_DIRS := $(SRC_DIR) $(BUILD_DIR)/gen
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 CXX := g++
-CPP_FLAGS ?= $(INC_FLAGS) -MMD -MP -std=c++1z -Wall -O2
+CPP_FLAGS := $(INC_FLAGS) -MMD -MP -std=c++1z -Wall -O2
 LD_LIBS := protobuf boost_system
-LD_FLAGS ?= -L/usr/lib $(addprefix -l,$(LD_LIBS))
+LD_FLAGS := -L/usr/lib $(addprefix -l,$(LD_LIBS))
 
 all: $(TARGET_EXECS)
 
@@ -31,7 +32,7 @@ $(BUILD_DIR)/gen/%.pb.cc $(BUILD_DIR)/gen/%.pb.h: $(PROTO_DIR)/%.proto
 	$(MKDIR_P) $(dir $@)
 	protoc -I$(PROTO_DIR) --cpp_out=$(BUILD_DIR)/gen $<
 
-$(BUILD_DIR)/%.cpp.o: %.cpp
+$(BUILD_DIR)/%.cpp.o: %.cpp | generated_headers
 	$(MKDIR_P) $(dir $@)
 	$(CXX) $(CPP_FLAGS) -c $< -o $@
 
@@ -39,7 +40,9 @@ $(BUILD_DIR)/gen/%.pb.cc.o: $(BUILD_DIR)/gen/%.pb.cc
 	$(MKDIR_P) $(dir $@)
 	$(CXX) $(CPP_FLAGS) -c $< -o $@
 
-.PHONY: clean test game_server format
+generated_headers: $(PROTO_HEADERS)
+
+.PHONY: generated_headers clean test game_server format
 
 clean:
 	$(RM) -r $(BUILD_DIR)
