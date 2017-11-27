@@ -3,9 +3,10 @@
 var net = require('net');
 
 var socketio = require('socket.io');
-var nbo = require('network-byte-order');
+var grpc = require('grpc');
 
-var RequestType = require('../gen/RequestType_pb').RequestType;
+// var RequestType = require('../gen/RequestType_pb').RequestType;
+var gameServerPb = grpc.load(__dirname + '/../../common/src/services/GameServer.proto');
 
 function Backend(frontendServer) {
   this.listener = socketio(frontendServer, {
@@ -19,26 +20,22 @@ function Backend(frontendServer) {
     });
   });
 
-  this.engineClient = net.createConnection({ port: 5000 }, () => {
-    console.log('Connected!');
+  this.engineClient = new gameServerPb.GameServer('localhost:5000', grpc.credentials.createInsecure());
+  var call = this.engineClient.sendAndReceive();
 
-    var payload = 'testy testy';
-    var buffer = Buffer.allocUnsafe(8 + payload.length);
-    nbo.htonl(buffer, 0, RequestType.CREATE_GAME_LOBBY);
-    nbo.htonl(buffer, 4, payload.length);
-    buffer.fill(payload, 8);
-
-    this.engineClient.write(buffer, () => {
-      console.log('Sent a request');
-    });
-    this.engineClient.write(buffer, () => {
-      console.log('Sent a request');
-    });
+  call.on('end', function() {
+    console.log('RPC call ended');
   });
 
-  this.engineClient.on('data', (data) => {
-    console.log(data.toString());
+  call.on('data', function(clientRequest) {
+    console.log('Received client request:', clientRequest);
   });
+
+  call.write({ test: 5 });
+  call.write({ test: 4 });
+  call.write({ test: 1 });
+  call.write({ test: 2 });
+  call.end();
 }
 
 module.exports = Backend;

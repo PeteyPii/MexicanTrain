@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+service GameServer {
+  rpc sendAndReceive (stream ServerRequest) returns (stream ClientRequest);
+}
+
+message ServerRequest {
+  uint32 test = 1;
+}
+
+message ClientRequest {
+  uint32 test = 1;
+}

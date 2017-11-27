@@ -1,11 +1,11 @@
 #pragma once
 
-class RemoteTrafficPipe;
+class GameServerImpl;
 
 class GameLobbyManager {
 public:
-  GameLobbyManager(RemoteTrafficPipe& remoteTrafficPipe);
+  GameLobbyManager(GameServerImpl& gameServer);
 
 private:
-  RemoteTrafficPipe& m_remoteTrafficPipe;
+  GameServerImpl& m_gameServer;
 };

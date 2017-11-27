@@ -1,11 +1,10 @@
-#include "GameServer.h"
+#include "GameServerImpl.h"
 #include <iostream>
 
 int main(int argc, const char** argv) {
   try {
-    boost::asio::io_service ioService;
-    GameServer gameServer(ioService);
-    ioService.run();
+    GameServerImpl gameServer;
+    gameServer.run();
   } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
   }

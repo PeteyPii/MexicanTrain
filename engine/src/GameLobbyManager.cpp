@@ -1,4 +1,6 @@
 #include "GameLobbyManager.h"
 
-GameLobbyManager::GameLobbyManager(RemoteTrafficPipe& remoteTrafficPipe) : m_remoteTrafficPipe(remoteTrafficPipe) {
+#include "GameServerImpl.h"
+
+GameLobbyManager::GameLobbyManager(GameServerImpl& gameServer) : m_gameServer(gameServer) {
 }
