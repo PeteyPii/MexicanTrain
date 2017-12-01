@@ -3,6 +3,7 @@ import './Profile.css';
 import BackButton from './BackButton';
 import { setUser } from '../actions/actions';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 class Profile extends Component {
   constructor(props) {
@@ -10,6 +11,7 @@ class Profile extends Component {
     this.state = {
       name: props.name,
       key: props.key_,
+      redirect: false,
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -38,9 +40,17 @@ class Profile extends Component {
   confirm(event) {
     event.preventDefault();
     this.props.dispatch(setUser(this.state.name, this.state.key));
+    this.setState({
+      redirect: true
+    });
   }
 
   render() {
+    if (this.state.redirect) {
+      return (
+        <Redirect to="/"/>
+      );
+    }
     return (
       <div className="Profile">
         <form>

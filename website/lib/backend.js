@@ -15,6 +15,12 @@ function Backend(frontendServer) {
 
   this.listener.on('connection', function(socket) {
     console.log('Connection!');
+    socket.on('message', function(data) {
+      console.log('WS message:', data);
+    });
+    socket.on('create_game', function(data) {
+      console.log('WS create_game', data);
+    });
     socket.on('disconnect', function() {
       console.log('Disconnection!');
     });
@@ -31,10 +37,6 @@ function Backend(frontendServer) {
     console.log('Received client request:', clientRequest);
   });
 
-  call.write({ test: 5 });
-  call.write({ test: 4 });
-  call.write({ test: 1 });
-  call.write({ test: 2 });
   call.end();
 }
 

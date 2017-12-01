@@ -5,7 +5,7 @@
 #include <algorithm>
 
 Round::Round(
-    GameSettings gameSettings, Board& board, std::vector<Player>& players, std::vector<int32>& incompleteRounds)
+    GameSettingsWrapper& gameSettings, Board& board, std::vector<Player>& players, std::vector<int32>& incompleteRounds)
     : m_gameSettings(gameSettings), m_board(board), m_players(players), m_incompleteRounds(incompleteRounds) {
 }
 
@@ -161,7 +161,7 @@ void Round::playTile(Player& player, std::set<id> validTrainIds, const std::stri
               countPlayed += 1;
             }
           }
-          if (countPlayed < m_gameSettings.m_maxPips + 1) {
+          if (countPlayed < m_gameSettings.maxPips() + 1) {
             m_areDoublesActive = true;
             m_activeDoublesTrainId = tilePlay.m_placeId;
           }
@@ -183,7 +183,7 @@ void Round::run() {
     player.m_ai->notifyRoundStart();
   }
 
-  for (int32 i = 0; i < m_gameSettings.m_startingHandSize; i++) {
+  for (int32 i = 0; i < m_gameSettings.startingHandSize(); i++) {
     for (auto& player : m_players) {
       Tile tile = m_board.dealTile();
       player.m_hand.push_back(tile);

@@ -2,7 +2,7 @@
 
 #include "Board.h"
 #include "Common.h"
-#include "GameSettings.h"
+#include "GameSettingsWrapper.h"
 #include "Player.h"
 #include <set>
 #include <string>
@@ -10,11 +10,15 @@
 
 class Round {
 public:
-  Round(GameSettings gameSettings, Board& board, std::vector<Player>& players, std::vector<int32>& incompleteRounds);
+  Round(
+      GameSettingsWrapper& gameSettings,
+      Board& board,
+      std::vector<Player>& players,
+      std::vector<int32>& incompleteRounds);
   void run();
 
 private:
-  GameSettings m_gameSettings;
+  GameSettingsWrapper& m_gameSettings;
   Board& m_board;
   std::vector<Player>& m_players;
   std::vector<int32>& m_incompleteRounds;

@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import './Root.css';
 import Home from './Home';
 import Profile from './Profile';
+import CreateGame from './CreateGame';
 import configureStore from '../configureStore';
 
 const store = configureStore();
@@ -17,6 +18,7 @@ class Root extends Component {
             <Switch>
               <Route exact path="/" component={Home}/>
               <Route exact path="/profile" component={Profile}/>
+              <Route exact path="/create-game" component={CreateGame}/>
               <Redirect to="/"/>
             </Switch>
           </div>

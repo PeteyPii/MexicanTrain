@@ -42,7 +42,7 @@ TilePlay SmartPlayerAI::playTile() {
 
   if (m_reevaluatePlays) {
     // TODO: support repeated dominos
-    vector<set<int32>> edgeSets(m_board->m_gameSettings.m_maxPips + 1);
+    vector<set<int32>> edgeSets(m_board->m_gameSettings.maxPips() + 1);
     for (auto& tile : m_player->m_hand) {
       edgeSets[tile.m_highPips].insert(tile.m_lowPips);
       edgeSets[tile.m_lowPips].insert(tile.m_highPips);

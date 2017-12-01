@@ -1,5 +1,5 @@
 #include "Game.h"
-#include "GameSettings.h"
+#include "GameSettingsWrapper.h"
 #include "StatTracker.h"
 #include "ai/GreedyPlayerAI.h"
 #include "ai/HumanPlayerAI.h"
@@ -14,10 +14,10 @@
 using namespace std;
 
 void testHumanAi() {
-  GameSettings gameSettings;
-  gameSettings.m_maxPips = 6;
-  gameSettings.m_startingHandSize = 9;
-  gameSettings.m_numberOfPlayers = 2;
+  GameSettingsWrapper gameSettings;
+  gameSettings.setMaxPips(6);
+  gameSettings.setStartingHandSize(9);
+  gameSettings.setNumberOfPlayers(2);
 
   vector<unique_ptr<PlayerAI>> playerAis;
   playerAis.emplace_back(std::make_unique<HumanPlayerAI>(std::cin, &std::cout));
@@ -27,10 +27,10 @@ void testHumanAi() {
 }
 
 void testRandomAi() {
-  GameSettings gameSettings;
-  gameSettings.m_maxPips = 6;
-  gameSettings.m_startingHandSize = 9;
-  gameSettings.m_numberOfPlayers = 2;
+  GameSettingsWrapper gameSettings;
+  gameSettings.setMaxPips(6);
+  gameSettings.setStartingHandSize(9);
+  gameSettings.setNumberOfPlayers(2);
 
   for (int32 i = 0; i < 1000; i++) {
     vector<unique_ptr<PlayerAI>> playerAis;
@@ -42,10 +42,10 @@ void testRandomAi() {
 }
 
 void testGreedyAi() {
-  GameSettings gameSettings;
-  gameSettings.m_maxPips = 6;
-  gameSettings.m_startingHandSize = 9;
-  gameSettings.m_numberOfPlayers = 2;
+  GameSettingsWrapper gameSettings;
+  gameSettings.setMaxPips(6);
+  gameSettings.setStartingHandSize(9);
+  gameSettings.setNumberOfPlayers(2);
 
   for (int32 i = 0; i < 1000; i++) {
     vector<unique_ptr<PlayerAI>> playerAis;
@@ -57,10 +57,10 @@ void testGreedyAi() {
 }
 
 void testSmartAi() {
-  GameSettings gameSettings;
-  gameSettings.m_maxPips = 12;
-  gameSettings.m_startingHandSize = 15;
-  gameSettings.m_numberOfPlayers = 3;
+  GameSettingsWrapper gameSettings;
+  gameSettings.setMaxPips(12);
+  gameSettings.setStartingHandSize(15);
+  gameSettings.setNumberOfPlayers(3);
 
   for (int32 i = 0; i < 1000; i++) {
     vector<unique_ptr<PlayerAI>> playerAis;

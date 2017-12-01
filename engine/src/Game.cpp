@@ -9,21 +9,9 @@
 #include <iostream>
 #include <set>
 
-Game::Game(std::ostream* out, const GameSettings& gameSettings, std::vector<std::unique_ptr<PlayerAI>>& playerAis)
+Game::Game(
+    std::ostream* out, const GameSettingsWrapper& gameSettings, std::vector<std::unique_ptr<PlayerAI>>& playerAis)
     : m_out(out), m_gameSettings(gameSettings) {
-  if (m_gameSettings.m_numberOfPlayers < 1 || m_gameSettings.m_numberOfPlayers > 8) {
-    std::cerr << "There must be 1 - 8 players." << std::endl;
-    m_areSettingsValid = false;
-  }
-  if (m_gameSettings.m_maxPips < 0) {
-    std::cerr << "Max pip must be non-negative." << std::endl;
-    m_areSettingsValid = false;
-  }
-  if (m_gameSettings.m_startingHandSize < 0 || m_gameSettings.m_startingHandSize > 25) {
-    std::cerr << "Starting hand size must be between 0 and 25." << std::endl;
-    m_areSettingsValid = false;
-  }
-
   for (auto& ai : playerAis) {
     m_playerAis.emplace_back(std::move(ai));
   }
@@ -31,22 +19,22 @@ Game::Game(std::ostream* out, const GameSettings& gameSettings, std::vector<std:
 
 void Game::run() {
   if (m_out) {
-    *m_out << "Number of players: " << m_gameSettings.m_numberOfPlayers << std::endl;
-    *m_out << "Max domino pip count: " << m_gameSettings.m_maxPips << std::endl;
-    *m_out << "Starting hand size: " << m_gameSettings.m_startingHandSize << std::endl;
+    *m_out << "Number of players: " << m_gameSettings.numberOfPlayers() << std::endl;
+    *m_out << "Max domino pip count: " << m_gameSettings.maxPips() << std::endl;
+    *m_out << "Starting hand size: " << m_gameSettings.startingHandSize() << std::endl;
   }
 
-  if (!m_areSettingsValid) {
+  if (!m_gameSettings.isValid()) {
     std::cerr << "Cannot run game with invalid settings." << std::endl;
     return;
   }
-  if ((uint32)m_gameSettings.m_numberOfPlayers != m_playerAis.size()) {
+  if ((uint32)m_gameSettings.numberOfPlayers() != m_playerAis.size()) {
     std::cerr << "Number of AIs does not match count in settings." << std::endl;
     return;
   }
 
-  std::vector<Player> players(m_gameSettings.m_numberOfPlayers);
-  std::vector<std::vector<EnemyPlayer>> enemyPlayerLists(m_gameSettings.m_numberOfPlayers);
+  std::vector<Player> players(m_gameSettings.numberOfPlayers());
+  std::vector<std::vector<EnemyPlayer>> enemyPlayerLists(m_gameSettings.numberOfPlayers());
   for (int32 i = 0; i < (int32)players.size(); i++) {
     for (int32 offset = 1; offset < (int32)players.size(); offset++) {
       enemyPlayerLists[i].push_back(players[(i + offset) % players.size()].m_enemyView);
@@ -64,7 +52,7 @@ void Game::run() {
   }
 
   std::vector<int32> incompleteRounds;
-  for (int32 i = 0; i <= m_gameSettings.m_maxPips; i++) {
+  for (int32 i = 0; i <= m_gameSettings.maxPips(); i++) {
     incompleteRounds.push_back(i);
   }
   reverse(incompleteRounds.begin(), incompleteRounds.end());

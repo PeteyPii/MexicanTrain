@@ -2,7 +2,6 @@
 
 #include "Common.h"
 #include "EnemyPlayer.h"
-#include "GameSettings.h"
 #include <string>
 #include <vector>
 

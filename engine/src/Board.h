@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.h"
-#include "GameSettings.h"
+#include "GameSettingsWrapper.h"
 #include "Player.h"
 #include "Tile.h"
 #include "Train.h"
@@ -12,7 +12,7 @@
 
 class Board {
 public:
-  Board(const std::vector<Player>& players, const GameSettings& gameSettings);
+  Board(const std::vector<Player>& players, const GameSettingsWrapper& gameSettings);
   void newRound();
   uint32 poolSize() const;
   Tile dealTile();
@@ -24,7 +24,7 @@ public:
   std::experimental::optional<Tile> m_centerTile;
   id m_centerPlaceId;
   Train m_publicTrain;
-  const GameSettings& m_gameSettings;
+  const GameSettingsWrapper& m_gameSettings;
 
 private:
   std::vector<Tile> m_tilePool;

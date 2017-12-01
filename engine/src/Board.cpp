@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <cassert>
 
-Board::Board(const std::vector<Player>& players, const GameSettings& gameSettings)
+Board::Board(const std::vector<Player>& players, const GameSettingsWrapper& gameSettings)
     : m_centerPlaceId(IdentityGenerator::get().nextId()), m_gameSettings(gameSettings) {
   for (const auto& player : players) {
     m_playerTrains.insert(std::make_pair(player.m_id, Train()));
@@ -26,7 +26,7 @@ void Board::newRound() {
   m_publicTrain.m_isPublic = true;
   m_centerTile = {};
 
-  for (int32 highPips = 0; highPips <= m_gameSettings.m_maxPips; highPips++) {
+  for (int32 highPips = 0; highPips <= m_gameSettings.maxPips(); highPips++) {
     for (int32 lowPips = 0; lowPips <= highPips; lowPips++) {
       m_tilePool.emplace_back(highPips, lowPips);
     }

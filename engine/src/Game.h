@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.h"
-#include "GameSettings.h"
+#include "GameSettingsWrapper.h"
 #include "Player.h"
 #include <memory>
 #include <vector>
@@ -11,12 +11,12 @@ class PlayerAI;
 
 class Game {
 public:
-  Game(std::ostream* out, const GameSettings& gameSettings, std::vector<std::unique_ptr<PlayerAI>>& playerAis);
+  Game(std::ostream* out, const GameSettingsWrapper& gameSettings, std::vector<std::unique_ptr<PlayerAI>>& playerAis);
   void run();
 
 private:
   std::ostream* m_out;
-  GameSettings m_gameSettings;
+  GameSettingsWrapper m_gameSettings;
   std::vector<std::unique_ptr<PlayerAI>> m_playerAis;
   bool m_areSettingsValid = true;
 };
