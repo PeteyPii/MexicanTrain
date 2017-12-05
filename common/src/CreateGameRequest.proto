@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+import "GameSettings.proto";
+
+message CreateGameRequest {
+  GameSettings game_settings = 1;
+  bytes user_hash = 2;
+}

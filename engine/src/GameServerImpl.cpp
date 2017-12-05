@@ -1,5 +1,6 @@
 #include "GameServerImpl.h"
 
+#include "CreateGameRequest.pb.h"
 #include <grpc++/security/server_credentials.h>
 #include <grpc++/server.h>
 #include <grpc++/server_builder.h>
@@ -15,6 +16,11 @@ grpc::Status GameServerImpl::sendAndReceive(
   ServerRequest request;
   while (stream->Read(&request)) {
     std::cout << "Received request: " << request.DebugString();
+    if (request.request_type() == ServerRequest_RequestType_CREATE_GAME) {
+      CreateGameRequest innerRequest;
+      innerRequest.ParseFromString(request.request_data());
+      std::cout << " Inner request: " << innerRequest.DebugString();
+    }
   }
   return grpc::Status::OK;
 }

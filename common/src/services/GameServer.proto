@@ -5,7 +5,12 @@ service GameServer {
 }
 
 message ServerRequest {
-  uint32 test = 1;
+  enum RequestType {
+    UNKNOWN = 0;
+    CREATE_GAME = 1;
+  }
+  RequestType request_type = 1;
+  bytes request_data = 2;
 }
 
 message ClientRequest {

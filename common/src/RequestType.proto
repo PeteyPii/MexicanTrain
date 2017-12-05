@@ -1,5 +1,0 @@
-syntax = "proto3";
-
-enum RequestType {
-  CREATE_GAME_LOBBY = 0;
-}

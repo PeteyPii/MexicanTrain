@@ -3,14 +3,15 @@ import './CreateGame.css';
 import BackButton from './BackButton';
 import { setDefaultGameSettings } from '../actions/actions';
 import { connect } from 'react-redux';
-import GameSettingsWrapper, {
+import {
+  GameSettingsWrapper,
   MIN_NUMBER_OF_PLAYERS,
   MAX_NUMBER_OF_PLAYERS,
   MIN_MAX_PIPS,
   MAX_MAX_PIPS,
   MIN_STARTING_HAND_SIZE,
   MAX_STARTING_HAND_SIZE,
-} from '../GameSettingsWrapper';
+} from '../../common/GameSettingsWrapper';
 import ProfileRequired from './ProfileRequired';
 import PropTypes from 'prop-types';
 import socket from '../clientSocket';

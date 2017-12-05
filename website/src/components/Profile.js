@@ -29,8 +29,13 @@ class Profile extends Component {
 
   handleInputChange(event) {
     const target = event.target;
-    const value = target.value;
+    let value = target.value;
     const name = target.name;
+
+    value = value.substring(0, 128);
+    if (name === 'name') {
+      value = value.replace(/[^\d\w-_]/, '');
+    }
 
     this.setState({
       [name]: value
