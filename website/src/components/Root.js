@@ -5,6 +5,7 @@ import './Root.css';
 import Home from './Home';
 import Profile from './Profile';
 import CreateGame from './CreateGame';
+import JoinGame from './JoinGame';
 import configureStore from '../configureStore';
 
 const store = configureStore();
@@ -19,6 +20,7 @@ class Root extends Component {
               <Route exact path="/" component={Home}/>
               <Route exact path="/profile" component={Profile}/>
               <Route exact path="/create-game" component={CreateGame}/>
+              <Route exact path="/join-game" component={JoinGame}/>
               <Redirect to="/"/>
             </Switch>
           </div>

@@ -45,7 +45,7 @@ function Backend(frontendServer) {
           throw Error('Settings are not valid.');
         }
       } catch (err) {
-        console.error('Failure processing "create_game"');
+        console.error('Failure processing "create_game".');
         console.error(data);
         console.error(err.stack);
         return;
