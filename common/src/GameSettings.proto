@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-message GameSettings {
-  int32 number_of_players = 1;
-  int32 max_pips = 2;
-  int32 starting_hand_size = 3;
-}
