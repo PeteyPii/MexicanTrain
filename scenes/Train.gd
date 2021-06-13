@@ -32,4 +32,4 @@ func add_tile(tile):
 
 	offset.y += ((len(tiles) - 1) / 2) * (tile_size.y + tile_separation)
 
-	tile.position = offset
+	tile.set_position(offset)

@@ -4,6 +4,7 @@ export var is_flipped = false
 export var is_face_down = false
 export var top_pips = 0
 export var bottom_pips = 0
+export var snap_time = 0.3
 
 const SPRITE_SHEET_GRID_SIZE = 4
 
@@ -28,7 +29,7 @@ const PIPS_TO_COLOR = {
 
 
 func _ready():
-	var sprite_sheet_size = $TopPips.texture.get_size()
+	var sprite_sheet_size = $AnimatedPosition/TopPips.texture.get_size()
 	assert(sprite_sheet_size.x == sprite_sheet_size.y)
 
 	set_top_pips(self.top_pips)
@@ -38,7 +39,29 @@ func _ready():
 
 
 func get_size():
-	return scale * $Surface.texture.get_size()
+	return $AnimatedPosition.scale * $AnimatedPosition/Surface.texture.get_size()
+
+
+func set_position(pos, instant = false):
+	if instant:
+		$Tween.remove_all()
+		self.position = pos
+		$AnimatedPosition.position = Vector2()
+		return
+
+	$AnimatedPosition.position += self.position - pos
+	self.position = pos
+	$Tween.remove_all()
+	$Tween.interpolate_property(
+		$AnimatedPosition,
+		"position",
+		$AnimatedPosition.position,
+		Vector2(),
+		snap_time,
+		Tween.TRANS_QUINT,
+		Tween.EASE_OUT
+	)
+	$Tween.start()
 
 
 func set_pips(top_pips_, bottom_pips_):
@@ -49,18 +72,18 @@ func set_pips(top_pips_, bottom_pips_):
 
 func set_top_pips(pips):
 	self.top_pips = pips
-	_set_one_pips($TopPips, self.top_pips)
+	_set_one_pips($AnimatedPosition/TopPips, self.top_pips)
 	return self
 
 
 func set_bottom_pips(pips):
 	self.bottom_pips = pips
-	_set_one_pips($BottomPips, self.bottom_pips)
+	_set_one_pips($AnimatedPosition/BottomPips, self.bottom_pips)
 	return self
 
 
 func _set_one_pips(sprite, value):
-	var sprite_sheet_size = $TopPips.texture.get_size()
+	var sprite_sheet_size = $AnimatedPosition/TopPips.texture.get_size()
 	var scale = sprite_sheet_size.x / SPRITE_SHEET_GRID_SIZE
 
 	sprite.region_rect.size = Vector2(scale, scale)
@@ -74,9 +97,9 @@ func set_flipped(is_flipped_):
 	is_flipped = is_flipped_
 
 	if self.is_flipped:
-		rotation_degrees = 180
+		$AnimatedPosition.rotation_degrees = 180
 	else:
-		rotation_degrees = 0
+		$AnimatedPosition.rotation_degrees = 0
 	return self
 
 
@@ -88,12 +111,12 @@ func set_face_down(is_face_down_):
 	self.is_face_down = is_face_down_
 
 	if self.is_face_down:
-		$TopPips.visible = false
-		$BottomPips.visible = false
-		$Surface.texture = face_down_tex
+		$AnimatedPosition/TopPips.visible = false
+		$AnimatedPosition/BottomPips.visible = false
+		$AnimatedPosition/Surface.texture = face_down_tex
 	else:
-		$TopPips.visible = true
-		$BottomPips.visible = true
-		$Surface.texture = face_up_tex
+		$AnimatedPosition/TopPips.visible = true
+		$AnimatedPosition/BottomPips.visible = true
+		$AnimatedPosition/Surface.texture = face_up_tex
 
 	return self

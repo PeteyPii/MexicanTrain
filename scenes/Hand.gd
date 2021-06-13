@@ -40,7 +40,8 @@ func set_tile_position(tile, index):
 	var tile_size = tile.get_size()
 	var offset = margin + tile_size / 2
 	offset.x += (tile_separation + tile_size.x) * index
-	tile.position = offset
+	# print("tile.set_position(", offset, ")")
+	tile.set_position(offset)
 
 
 func insert_tile_sorted(tile):
@@ -51,7 +52,7 @@ func insert_tile_sorted(tile):
 
 
 func _tile_compare(tile, search_tile):
-  return tile.position.x < search_tile.position.x
+	return tile.position.x < search_tile.position.x
 
 
 func reflow_tiles():
@@ -68,14 +69,14 @@ func _input(event):
 				dragged_tile_index = tiles.find(hovered_tile)
 				hovered_tile.z_index = 1
 			else:
-				dragging = false
-				if hovered_tile != null:
+				if dragging && hovered_tile != null:
+					dragging = false
 					hovered_tile.z_index = 0
 					set_tile_position(hovered_tile, dragged_tile_index)
 					dragged_tile_index = -1
 	elif event is InputEventMouseMotion:
 		if dragging:
-			hovered_tile.position = event.position + dragged_offset
+			hovered_tile.set_position(event.position + dragged_offset, true)
 			if (
 				dragged_tile_index > 0
 				&& hovered_tile.position.x < tiles[dragged_tile_index - 1].position.x

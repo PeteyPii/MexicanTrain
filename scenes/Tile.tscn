@@ -5,7 +5,6 @@
 [ext_resource path="res://scenes/Tile.gd" type="Script" id=3]
 
 [node name="Tile" type="Node2D"]
-scale = Vector2( 0.125, 0.125 )
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_group_": true
@@ -13,11 +12,14 @@ __meta__ = {
 top_pips = 15
 bottom_pips = 11
 
-[node name="Surface" type="Sprite" parent="."]
+[node name="AnimatedPosition" type="Node2D" parent="."]
+scale = Vector2( 0.125, 0.125 )
+
+[node name="Surface" type="Sprite" parent="AnimatedPosition"]
 modulate = Color( 0.901961, 0.878431, 0.823529, 1 )
 texture = ExtResource( 1 )
 
-[node name="TopPips" type="Sprite" parent="."]
+[node name="TopPips" type="Sprite" parent="AnimatedPosition"]
 modulate = Color( 0.301961, 0.796078, 0.184314, 1 )
 position = Vector2( 0, -200 )
 scale = Vector2( 2, 2 )
@@ -25,7 +27,7 @@ texture = ExtResource( 2 )
 region_enabled = true
 region_rect = Rect2( 600, 600, 200, 200 )
 
-[node name="BottomPips" type="Sprite" parent="."]
+[node name="BottomPips" type="Sprite" parent="AnimatedPosition"]
 modulate = Color( 0.219608, 0.219608, 0.219608, 1 )
 position = Vector2( 0, 200 )
 rotation = 3.14159
@@ -35,10 +37,12 @@ region_enabled = true
 region_rect = Rect2( 200, 600, 200, 200 )
 
 [node name="Control" type="Control" parent="."]
-margin_left = -200.0
-margin_top = -400.0
-margin_right = 200.0
-margin_bottom = 400.0
+margin_left = -25.0
+margin_top = -50.0
+margin_right = 25.0
+margin_bottom = 50.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Tween" type="Tween" parent="."]
