@@ -71,7 +71,7 @@ func _set_one_pips(sprite, value):
 
 
 func set_flipped(is_flipped_):
-	self.is_flipped = is_flipped_
+	is_flipped = is_flipped_
 
 	if self.is_flipped:
 		rotation_degrees = 180

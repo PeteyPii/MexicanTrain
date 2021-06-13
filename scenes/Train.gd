@@ -7,10 +7,6 @@ export var margin = Vector2(10, 10)
 export var tile_separation = 4
 
 
-func _init():
-	pass
-
-
 func _ready():
 	add_tile(Tile.instance().set_pips(1, 2))
 	add_tile(Tile.instance().set_pips(3, 4))
