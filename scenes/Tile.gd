@@ -44,14 +44,14 @@ func get_size():
 
 func set_position(pos, instant = false):
 	if instant:
-		$Tween.remove_all()
+		$Tween.remove($AnimatedPosition, "position")
 		self.position = pos
 		$AnimatedPosition.position = Vector2()
 		return
 
 	$AnimatedPosition.position += self.position - pos
 	self.position = pos
-	$Tween.remove_all()
+	$Tween.remove($AnimatedPosition, "position")
 	$Tween.interpolate_property(
 		$AnimatedPosition,
 		"position",
@@ -96,10 +96,22 @@ func _set_one_pips(sprite, value):
 func set_flipped(is_flipped_):
 	is_flipped = is_flipped_
 
+	var final_rotation = 0
 	if self.is_flipped:
-		$AnimatedPosition.rotation_degrees = 180
-	else:
-		$AnimatedPosition.rotation_degrees = 0
+		final_rotation = 180
+
+	$Tween.remove($AnimatedPosition, "rotation_degrees")
+	$Tween.interpolate_property(
+		$AnimatedPosition,
+		"rotation_degrees",
+		$AnimatedPosition.rotation_degrees,
+		final_rotation,
+		snap_time,
+		Tween.TRANS_QUINT,
+		Tween.EASE_OUT
+	)
+	$Tween.start()
+
 	return self
 
 

@@ -10,6 +10,12 @@ var hovered_tile = null
 var dragging = false
 var dragged_offset = Vector2()
 var dragged_tile_index = -1
+var original_dragged_tile_index = -1
+
+export var top_y_rearrange_threshold = -100
+export var bottom_y_rearrange_threshold = 200
+
+const TOP_MOST_Z_INDEX = 999
 
 
 func _ready():
@@ -40,8 +46,8 @@ func set_tile_position(tile, index):
 	var tile_size = tile.get_size()
 	var offset = margin + tile_size / 2
 	offset.x += (tile_separation + tile_size.x) * index
-	# print("tile.set_position(", offset, ")")
 	tile.set_position(offset)
+	tile.z_index = index
 
 
 func insert_tile_sorted(tile):
@@ -67,17 +73,26 @@ func _input(event):
 				dragging = true
 				dragged_offset = hovered_tile.position - event.position
 				dragged_tile_index = tiles.find(hovered_tile)
-				hovered_tile.z_index = 1
+				original_dragged_tile_index = dragged_tile_index
+				hovered_tile.z_index = TOP_MOST_Z_INDEX
 			else:
 				if dragging && hovered_tile != null:
 					dragging = false
-					hovered_tile.z_index = 0
 					set_tile_position(hovered_tile, dragged_tile_index)
 					dragged_tile_index = -1
+					original_dragged_tile_index = -1
 	elif event is InputEventMouseMotion:
 		if dragging:
 			hovered_tile.set_position(event.position + dragged_offset, true)
-			if (
+			var y_diff = hovered_tile.position.y - position.y
+			print(y_diff)
+			if y_diff < top_y_rearrange_threshold || y_diff > bottom_y_rearrange_threshold:
+				if hovered_tile != tiles[original_dragged_tile_index]:
+					tiles.remove(dragged_tile_index)
+					tiles.insert(original_dragged_tile_index, hovered_tile)
+					dragged_tile_index = original_dragged_tile_index
+					reflow_tiles()
+			elif (
 				dragged_tile_index > 0
 				&& hovered_tile.position.x < tiles[dragged_tile_index - 1].position.x
 			):
